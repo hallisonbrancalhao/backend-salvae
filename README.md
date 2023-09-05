@@ -1,73 +1,77 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Documentação de Estrutura Backend - salvAE
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Índice
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- [Introdução](#introdução)
+- [Estrutura do Diretório](#estrutura-do-diretório)
+  - [`main.ts`](#maints)
+  - [`app.module.ts`](#appmodulets)
+  - [`config/`](#config)
+  - [`features/`](#features)
+  - [`data-access/`](#data-access)
+  - [`util/`](#util)
+  - [`domain/`](#domain)
+  - [`api/`](#api)
+  - [`tests/`](#tests)
 
-## Description
+## Introdução
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este documento serve para esclarecer a organização e responsabilidades dos diretórios e arquivos no projeto NestJS.
 
-## Installation
+## Estrutura do Diretório
 
-```bash
-$ npm install
-```
+### `main.ts`
 
-## Running the app
+O ponto de entrada do aplicativo. Este arquivo inicializa a aplicação NestJS.
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+### `app.module.ts`
 
-# production mode
-$ npm run start:prod
-```
+Módulo principal que inicializa a aplicação NestJS e carrega os módulos dependentes.
 
-## Test
+---
 
-```bash
-# unit tests
-$ npm run test
+### `config/`
 
-# e2e tests
-$ npm run test:e2e
+Diretório que contém configurações globais, como configurações de banco de dados, variáveis de ambiente, etc.
 
-# test coverage
-$ npm run test:cov
-```
+---
 
-## Support
+### `features/`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Biblioteca "feature" que contém a lógica de negócios e os controladores para recursos específicos do aplicativo.
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### `data-access/`
 
-## License
+Biblioteca "data-access" responsável por gerenciar a interação com bancos de dados ou outras fontes de dados.
 
-Nest is [MIT licensed](LICENSE).
+---
+
+### `util/`
+
+Diretório que contém utilitários, funções e helpers que podem ser usados em todo o projeto.
+
+---
+
+### `domain/`
+
+Contém as entidades e regras de negócio puras, isolando a lógica de domínio do resto do aplicativo.
+
+---
+
+### `api/`
+
+Serve como ponto de acesso para permitir que camadas de diferentes escopos se comuniquem entre si.
+
+---
+
+### `tests/`
+
+Contém os testes unitários e de ponta a ponta para garantir a qualidade do código.
+
+---
+
+Espero que esta documentação ofereça uma visão clara da estrutura do projeto e da responsabilidade de cada segmento.
