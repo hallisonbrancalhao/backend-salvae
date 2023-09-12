@@ -1,6 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
+  IsNumber,
   IsString,
   MaxLength,
   MinLength,
@@ -25,5 +26,11 @@ export class CreateUserDto {
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  senha: string;
+  password: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @MinLength(11)
+  @MaxLength(11)
+  cpf: number;
 }
