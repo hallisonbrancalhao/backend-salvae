@@ -31,7 +31,7 @@ export class User {
   @Column()
   @IsNumber()
   @IsNotEmpty()
-  cpf: string;
+  cpf: number;
 
   @Column()
   @IsString()

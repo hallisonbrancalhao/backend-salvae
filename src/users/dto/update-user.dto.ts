@@ -7,16 +7,16 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(50)
-  nome: string;
+  firstName: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(50)
-  sobrenome: string;
+  lastName: string;
 
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  senha: string;
+  password: string;
 }

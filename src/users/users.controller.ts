@@ -53,15 +53,15 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Retrieve a user by ID' })
+  @ApiOperation({ summary: 'Retrieve a user by cpf' })
   @ApiResponse({ status: 200, description: 'User found' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
+  @ApiParam({ name: 'cpf', type: 'number', description: 'User cpf' })
   @UseGuards(AuthGuard)
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(':cpf')
+  findOne(@Param('cpf') cpf: number) {
     try {
-      return this.usersService.findOne(id);
+      return this.usersService.findOne(cpf);
     } catch (error) {
       throw new HttpException(
         {
@@ -73,15 +73,15 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Update a user by ID' })
+  @ApiOperation({ summary: 'Update a user by cpf' })
   @ApiResponse({ status: 200, description: 'User successfully updated.' })
   @ApiBody({ type: UpdateUserDto })
-  @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
+  @ApiParam({ name: 'cpf', type: 'number', description: 'User cpf' })
   @UseGuards(AuthGuard)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @Patch(':cpf')
+  update(@Param('cpf') cpf: number, @Body() updateUserDto: UpdateUserDto) {
     try {
-      return this.usersService.update(id, updateUserDto);
+      return this.usersService.update(cpf, updateUserDto);
     } catch (error) {
       throw new HttpException(
         {
