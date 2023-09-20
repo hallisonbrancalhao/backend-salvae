@@ -13,26 +13,40 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    createUserDto.password = await this.userHash(createUserDto.password);
-    const user = this.userRepository.create(createUserDto);
-    await this.userRepository.save(user);
+    const hashedPass = await this.userHash(createUserDto.senha);
+    createUserDto.senha = hashedPass;
+    return this.userRepository.save(createUserDto);
   }
 
   findAll() {
     return this.userRepository.find({
-      select: ['firstName', 'lastName', 'email'],
+      select: [
+        'nome',
+        'sobrenome',
+        'email',
+        'CPF',
+        'telefone',
+        'dataNascimento',
+      ],
     });
   }
 
   findOne(cpf: number) {
     return this.userRepository.find({
-      where: { cpf: cpf },
-      select: ['firstName', 'lastName', 'email'],
+      where: { CPF: cpf },
+      select: [
+        'nome',
+        'sobrenome',
+        'email',
+        'CPF',
+        'telefone',
+        'dataNascimento',
+      ],
     });
   }
 
-  findUser(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+  findUser(CPF: number) {
+    return this.userRepository.findOne({ where: { CPF } });
   }
 
   async update(cpf: number, updateUserDto: UpdateUserDto) {

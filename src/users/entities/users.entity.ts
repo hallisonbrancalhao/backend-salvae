@@ -5,10 +5,19 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsDate,
+} from '@nestjs/class-validator';
+import { Endereco } from 'src/endereco/entities/endereco.entity';
 
-@Entity('users')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -16,12 +25,12 @@ export class User {
   @Column()
   @IsString()
   @IsNotEmpty()
-  firstName: string;
+  nome: string;
 
   @Column()
   @IsString()
   @IsNotEmpty()
-  lastName: string;
+  sobrenome: string;
 
   @Column()
   @IsEmail()
@@ -29,14 +38,28 @@ export class User {
   email: string;
 
   @Column()
-  @IsNumber()
-  @IsNotEmpty()
-  cpf: number;
-
-  @Column()
   @IsString()
   @IsNotEmpty()
-  password: string;
+  senha: string;
+
+  @Column()
+  @IsNumber()
+  @IsNotEmpty()
+  CPF: number;
+
+  @OneToOne(() => Endereco)
+  @JoinColumn()
+  endereco: Endereco;
+
+  @Column()
+  @IsDate()
+  @IsNotEmpty()
+  dataNascimento: Date;
+
+  @Column()
+  @IsNumber()
+  @IsNotEmpty()
+  telefone: number;
 
   @CreateDateColumn({
     type: 'timestamp',

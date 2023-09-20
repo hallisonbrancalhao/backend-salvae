@@ -10,23 +10,22 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(email: string, senha: string): Promise<any> {
-    const user = await this.userService.findUser(email);
-    const validPassword: boolean = await bcrypt.compare(senha, user.password);
-    console.log('AuthService : signIn : validPassword:', validPassword);
+  async signIn(cpf: number, senha: string): Promise<any> {
+    const user = await this.userService.findUser(cpf);
+    const validPassword: boolean = await bcrypt.compare(senha, user.senha);
 
     if (!validPassword) throw new UnauthorizedException();
 
     const payload = {
-      cpf: user.cpf,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      cpf: user.CPF,
+      nome: user.nome,
+      sobrenome: user.sobrenome,
       email: user.email,
     };
 
     return {
       access_token: await this.jwtService.signAsync(payload),
-      user: user,
+      user: { senha, user },
     };
   }
 }

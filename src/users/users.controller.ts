@@ -22,26 +22,40 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
-@ApiTags('users')
-@Controller('users')
+@ApiTags('Usuários')
+@Controller('usuario')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @ApiOperation({ summary: 'Create a new user' })
-  @ApiResponse({ status: 201, description: 'User successfully created.' })
-  @ApiBody({ type: CreateUserDto })
+  @ApiOperation({ summary: 'Criar novo usuario' })
+  @ApiResponse({ status: 201, description: 'Usuario criado com sucesso.' })
+  @ApiBody({
+    type: CreateUserDto,
+    description: 'Dados do usuário a ser criado.',
+  })
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    try {
+      this.usersService.create(createUserDto);
+      return { status: 201, description: 'Usuario criado com sucesso.' };
+    } catch (error) {
+      return new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'Não foi possível criar o usuário.',
+        },
+        HttpStatus.FORBIDDEN,
+      );
+    }
   }
 
-  @ApiOperation({ summary: 'Retrieve all users' })
-  @ApiResponse({ status: 200, description: 'Array of users' })
+  @ApiOperation({ summary: 'Listar todos usuários' })
+  @ApiResponse({ status: 200, description: 'Lista de usuários' })
   @UseGuards(AuthGuard)
   @Get()
   findAll() {
     try {
-      return this.usersService.findAll();
+      this.usersService.findAll();
     } catch (error) {
       throw new HttpException(
         {
@@ -53,10 +67,10 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Retrieve a user by cpf' })
-  @ApiResponse({ status: 200, description: 'User found' })
-  @ApiResponse({ status: 404, description: 'User not found' })
-  @ApiParam({ name: 'cpf', type: 'number', description: 'User cpf' })
+  @ApiOperation({ summary: 'Encontrar usuário por CPF' })
+  @ApiResponse({ status: 200, description: 'Usuário encontrado' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
+  @ApiParam({ name: 'CPF', type: 'number', description: 'CPF do usuário' })
   @UseGuards(AuthGuard)
   @Get(':cpf')
   findOne(@Param('cpf') cpf: number) {
@@ -73,10 +87,10 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Update a user by cpf' })
-  @ApiResponse({ status: 200, description: 'User successfully updated.' })
+  @ApiOperation({ summary: 'Alterar usuário por CPF' })
+  @ApiResponse({ status: 200, description: 'Usuário alterado com sucesso.' })
   @ApiBody({ type: UpdateUserDto })
-  @ApiParam({ name: 'cpf', type: 'number', description: 'User cpf' })
+  @ApiParam({ name: 'CPF', type: 'number', description: 'CPF do usuário' })
   @UseGuards(AuthGuard)
   @Patch(':cpf')
   update(@Param('cpf') cpf: number, @Body() updateUserDto: UpdateUserDto) {
@@ -93,9 +107,9 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Delete a user by ID' })
-  @ApiResponse({ status: 200, description: 'User successfully deleted.' })
-  @ApiParam({ name: 'id', type: 'string', description: 'User ID' })
+  @ApiOperation({ summary: 'Excluir usuário por CPF' })
+  @ApiResponse({ status: 200, description: 'Usuário excluído com sucesso.' })
+  @ApiParam({ name: 'CPF', type: 'number', description: 'CPF ' })
   @UseGuards(AuthGuard)
   @Delete(':id')
   delete(@Param('id') id: string) {
