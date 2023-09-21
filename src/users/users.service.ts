@@ -13,21 +13,35 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    createUserDto.password = await this.userHash(createUserDto.password);
-    const user = this.userRepository.create(createUserDto);
-    await this.userRepository.save(user);
+    const hashedPass = await this.userHash(createUserDto.senha);
+    createUserDto.senha = hashedPass;
+    return this.userRepository.save(createUserDto);
   }
 
-  findAll() {
-    return this.userRepository.find({
-      select: ['firstName', 'lastName', 'email'],
+  async findAll() {
+    return await this.userRepository.find({
+      select: [
+        'nome',
+        'sobrenome',
+        'email',
+        'CPF',
+        'telefone',
+        'dataNascimento',
+      ],
     });
   }
 
-  findOne(cpf: number) {
+  findOne(email: string) {
     return this.userRepository.find({
-      where: { cpf: cpf },
-      select: ['firstName', 'lastName', 'email'],
+      where: { email },
+      select: [
+        'nome',
+        'sobrenome',
+        'email',
+        'CPF',
+        'telefone',
+        'dataNascimento',
+      ],
     });
   }
 
@@ -35,13 +49,13 @@ export class UsersService {
     return this.userRepository.findOne({ where: { email } });
   }
 
-  async update(cpf: number, updateUserDto: UpdateUserDto) {
-    await this.userRepository.update(cpf, updateUserDto);
-    return this.findOne(cpf);
+  async update(email: string, updateUserDto: UpdateUserDto) {
+    await this.userRepository.update(email, updateUserDto);
+    return this.findOne(email);
   }
 
-  delete(id: string) {
-    return this.userRepository.softDelete(id);
+  delete(email: string) {
+    return this.userRepository.softDelete({ email });
   }
 
   private async userHash(pass: string): Promise<string> {
