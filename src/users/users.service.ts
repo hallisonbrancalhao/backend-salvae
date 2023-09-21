@@ -18,8 +18,8 @@ export class UsersService {
     return this.userRepository.save(createUserDto);
   }
 
-  findAll() {
-    return this.userRepository.find({
+  async findAll() {
+    return await this.userRepository.find({
       select: [
         'nome',
         'sobrenome',
@@ -31,9 +31,9 @@ export class UsersService {
     });
   }
 
-  findOne(cpf: number) {
+  findOne(email: string) {
     return this.userRepository.find({
-      where: { CPF: cpf },
+      where: { email },
       select: [
         'nome',
         'sobrenome',
@@ -45,17 +45,17 @@ export class UsersService {
     });
   }
 
-  findUser(CPF: number) {
-    return this.userRepository.findOne({ where: { CPF } });
+  findUser(email: string) {
+    return this.userRepository.findOne({ where: { email } });
   }
 
-  async update(cpf: number, updateUserDto: UpdateUserDto) {
-    await this.userRepository.update(cpf, updateUserDto);
-    return this.findOne(cpf);
+  async update(email: string, updateUserDto: UpdateUserDto) {
+    await this.userRepository.update(email, updateUserDto);
+    return this.findOne(email);
   }
 
-  delete(id: string) {
-    return this.userRepository.softDelete(id);
+  delete(email: string) {
+    return this.userRepository.softDelete({ email });
   }
 
   private async userHash(pass: string): Promise<string> {

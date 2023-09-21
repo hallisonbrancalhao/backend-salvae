@@ -1,23 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import {
   IsString,
   IsNotEmpty,
   IsOptional,
   MaxLength,
   MinLength,
-} from 'class-validator';
+  IsNumber,
+} from '@nestjs/class-validator';
+import { User } from 'src/users/entities/users.entity';
 
 @Entity('endereco')
 export class Endereco {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne(() => User, (user) => user.id)
+  user: User;
+
   @Column()
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(8)
-  @MaxLength(8)
-  cep: string;
+  @IsNumber({}, { message: 'O CEP deve ser um número' })
+  @IsNotEmpty({ message: 'O CEP deve ser preenchido' })
+  @MinLength(8, { message: 'O CEP deve conter 8 dígitos' })
+  @MaxLength(8, { message: 'O CEP deve conter 8 dígitos' })
+  cep: number;
 
   @Column()
   @IsOptional()
@@ -25,42 +30,37 @@ export class Endereco {
   complemento: string;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'O número deve ser uma string' })
+  @IsNotEmpty({ message: 'O número deve ser preenchido' })
   numero: string;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
-  rua: string;
-
-  @Column()
-  @IsString()
-  @IsNotEmpty()
-  bairro: string;
-
-  @Column()
-  @IsString()
-  @IsNotEmpty()
-  cidade: string;
-
-  @Column()
-  @IsOptional()
-  @IsString()
+  @IsOptional({ message: 'O estado deve ser preenchido' })
+  @IsString({ message: 'O estado deve ser uma string' })
   logradouro: string;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'O bairro deve ser uma string' })
+  @IsNotEmpty({ message: 'O bairro deve ser preenchido' })
+  bairro: string;
+
+  @Column()
+  @IsString({ message: 'A cidade deve ser uma string' })
+  @IsNotEmpty({ message: 'A cidade deve ser preenchida' })
+  cidade: string;
+
+  @Column()
+  @IsString({ message: 'O estado deve ser uma string' })
+  @IsNotEmpty({ message: 'O estado deve ser preenchido' })
   estado: string;
 
   @Column()
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'O país deve ser uma string' })
+  @IsNotEmpty({ message: 'O país deve ser preenchido' })
   pais: string;
 
   @Column()
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'As coordenadas devem ser uma string' })
   coordenadas: string;
 }

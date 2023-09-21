@@ -1,62 +1,48 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateEnderecoDto {
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(8)
-  @MaxLength(8)
-  cep: string;
+  @ApiProperty({ example: '12345678' })
+  @IsNumber({}, { message: 'O CEP deve ser um número' })
+  @IsNotEmpty({ message: 'O CEP deve ser preenchido' })
+  cep: number;
 
   @ApiProperty()
   @IsOptional()
-  @IsString()
   complemento: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: '123 B' })
+  @IsString({ message: 'O número deve ser uma string' })
+  @IsNotEmpty({ message: 'O número deve ser preenchido' })
   numero: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  rua: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  bairro: string;
-
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  cidade: string;
-
-  @ApiProperty()
-  @IsOptional()
-  @IsString()
+  @ApiProperty({ example: 'Avenida Brasil' })
+  @IsOptional({ message: 'O estado deve ser preenchido' })
+  @IsString({ message: 'O estado deve ser uma string' })
   logradouro: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'Centro' })
+  @IsString({ message: 'O bairro deve ser uma string' })
+  @IsNotEmpty({ message: 'O bairro deve ser preenchido' })
+  bairro: string;
+
+  @ApiProperty({ example: 'Maringá' })
+  @IsString({ message: 'A cidade deve ser uma string' })
+  @IsNotEmpty({ message: 'A cidade deve ser preenchida' })
+  cidade: string;
+
+  @ApiProperty({ example: 'Paraná' })
+  @IsString({ message: 'O estado deve ser uma string' })
+  @IsNotEmpty({ message: 'O estado deve ser preenchido' })
   estado: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'Brasil' })
+  @IsString({ message: 'O país deve ser uma string' })
+  @IsNotEmpty({ message: 'O país deve ser preenchido' })
   pais: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '-23.420999, -51.933056' })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'As coordenadas devem ser uma string' })
   coordenadas: string;
 }

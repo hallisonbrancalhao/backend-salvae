@@ -14,6 +14,7 @@ import {
   IsNumber,
   IsString,
   IsDate,
+  IsOptional,
 } from '@nestjs/class-validator';
 import { Endereco } from 'src/endereco/entities/endereco.entity';
 
@@ -23,41 +24,41 @@ export class User {
   id: number;
 
   @Column()
-  @IsString()
+  @IsString({ message: 'O nome deve ser uma string' })
   @IsNotEmpty()
   nome: string;
 
   @Column()
-  @IsString()
+  @IsString({ message: 'O sobrenome deve ser uma string' })
   @IsNotEmpty()
   sobrenome: string;
 
   @Column()
-  @IsEmail()
+  @IsEmail({}, { message: 'O email deve ser um email válido' })
   @IsNotEmpty()
   email: string;
 
   @Column()
-  @IsString()
+  @IsString({ message: 'A senha deve ser uma string' })
   @IsNotEmpty()
   senha: string;
 
-  @Column()
-  @IsNumber()
+  @Column({ type: 'bigint' })
+  @IsNumber({}, { message: 'O CPF deve ser um número' })
   @IsNotEmpty()
   CPF: number;
 
-  @OneToOne(() => Endereco)
-  @JoinColumn()
+  @OneToOne(() => Endereco, (endereco) => endereco.user)
+  @IsOptional()
   endereco: Endereco;
 
   @Column()
-  @IsDate()
+  @IsString({ message: 'A data deve ser no formato dd/mm/yyyy' })
   @IsNotEmpty()
-  dataNascimento: Date;
+  dataNascimento: string;
 
-  @Column()
-  @IsNumber()
+  @Column({ type: 'bigint' })
+  @IsNumber({}, { message: 'O telefone deve conter apenas números' })
   @IsNotEmpty()
   telefone: number;
 

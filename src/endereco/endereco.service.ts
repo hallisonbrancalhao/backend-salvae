@@ -1,26 +1,39 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { CreateEnderecoDto } from './dto/create-endereco.dto';
 import { UpdateEnderecoDto } from './dto/update-endereco.dto';
+import { Endereco } from './entities/endereco.entity';
 
 @Injectable()
 export class EnderecoService {
-  create(createEnderecoDto: CreateEnderecoDto) {
-    return 'This action adds a new endereco';
+  constructor(
+    @Inject('ENDERECO_REPOSITORY')
+    private readonly enderecoRepository: Repository<Endereco>,
+  ) {}
+
+  async create(createEnderecoDto: CreateEnderecoDto) {
+    return await this.enderecoRepository.save(createEnderecoDto);
   }
 
   findAll() {
-    return `This action returns all endereco`;
+    return this.enderecoRepository.find({
+      select: ['logradouro', 'numero', 'bairro', 'cidade', 'estado', 'cep'],
+    });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} endereco`;
+    return this.enderecoRepository.findOne({
+      where: { id },
+      select: ['logradouro', 'numero', 'bairro', 'cidade', 'estado', 'cep'],
+    });
   }
 
-  update(id: number, updateEnderecoDto: UpdateEnderecoDto) {
-    return `This action updates a #${id} endereco`;
+  async update(id: number, updateEnderecoDto: UpdateEnderecoDto) {
+    await this.enderecoRepository.update(id, updateEnderecoDto);
+    return this.findOne(id);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} endereco`;
+    return this.enderecoRepository.softDelete(id);
   }
 }
