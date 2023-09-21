@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UserLoginDto {
   @ApiProperty()
-  @IsEmail({}, { message: 'O enail precisa ser válido' })
+  @IsEmail({}, { message: 'O email precisa ser válido' })
   email: string;
 
   @ApiProperty()
