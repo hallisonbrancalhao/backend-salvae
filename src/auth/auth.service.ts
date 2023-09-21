@@ -11,22 +11,26 @@ export class AuthService {
   ) {}
 
   async signIn(email: string, senha: string): Promise<any> {
-    const user = await this.userService.findUser(email);
-    const validPassword: boolean = await bcrypt.compare(senha, user.password);
-    console.log('AuthService : signIn : validPassword:', validPassword);
+    try {
+      const user = await this.userService.findUser(email);
+      const validPassword: boolean = await bcrypt.compare(senha, user.senha);
 
-    if (!validPassword) throw new UnauthorizedException();
+      if (!validPassword) throw new UnauthorizedException();
 
-    const payload = {
-      cpf: user.cpf,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    };
+      const payload = {
+        cpf: user.CPF,
+        nome: user.nome,
+        sobrenome: user.sobrenome,
+        email: user.email,
+        endereco: user?.endereco,
+      };
 
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-      user: user,
-    };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+        user: payload,
+      };
+    } catch (error) {
+      return new UnauthorizedException();
+    }
   }
 }

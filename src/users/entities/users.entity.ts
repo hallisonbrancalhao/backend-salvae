@@ -5,38 +5,62 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsDate,
+  IsOptional,
+} from '@nestjs/class-validator';
+import { Endereco } from 'src/endereco/entities/endereco.entity';
 
-@Entity('users')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  @IsString()
+  @IsString({ message: 'O nome deve ser uma string' })
   @IsNotEmpty()
-  firstName: string;
+  nome: string;
 
   @Column()
-  @IsString()
+  @IsString({ message: 'O sobrenome deve ser uma string' })
   @IsNotEmpty()
-  lastName: string;
+  sobrenome: string;
 
   @Column()
-  @IsEmail()
+  @IsEmail({}, { message: 'O email deve ser um email válido' })
   @IsNotEmpty()
   email: string;
 
   @Column()
-  @IsNumber()
+  @IsString({ message: 'A senha deve ser uma string' })
   @IsNotEmpty()
-  cpf: number;
+  senha: string;
+
+  @Column({ type: 'bigint' })
+  @IsNumber({}, { message: 'O CPF deve ser um número' })
+  @IsNotEmpty()
+  CPF: number;
+
+  @OneToOne(() => Endereco, (endereco) => endereco.user)
+  @IsOptional()
+  endereco: Endereco;
 
   @Column()
-  @IsString()
+  @IsString({ message: 'A data deve ser no formato dd/mm/yyyy' })
   @IsNotEmpty()
-  password: string;
+  dataNascimento: string;
+
+  @Column({ type: 'bigint' })
+  @IsNumber({}, { message: 'O telefone deve conter apenas números' })
+  @IsNotEmpty()
+  telefone: number;
 
   @CreateDateColumn({
     type: 'timestamp',
