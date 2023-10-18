@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import {
   IsString,
   IsNotEmpty,
@@ -14,7 +20,10 @@ export class Endereco {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.endereco, {
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'user_id' })
   user: User;
 
   @Column()
@@ -24,10 +33,10 @@ export class Endereco {
   @MaxLength(8, { message: 'O CEP deve conter 8 dígitos' })
   cep: number;
 
-  @Column()
+  @Column({ nullable: true })
   @IsOptional()
   @IsString()
-  complemento: string;
+  complemento: string | null;
 
   @Column()
   @IsString({ message: 'O número deve ser uma string' })

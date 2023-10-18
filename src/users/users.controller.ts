@@ -22,15 +22,11 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { EnderecoService } from 'src/endereco/endereco.service';
 
 @ApiTags('Usuários')
 @Controller('usuario')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly enderecoService: EnderecoService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Criar novo usuario' })
   @ApiResponse({ status: 201, description: 'Usuario criado com sucesso.' })
@@ -42,14 +38,15 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto) {
     try {
       await this.usersService.create(createUserDto);
-      if (createUserDto.endereco)
-        this.enderecoService.create(createUserDto.endereco);
-      return { status: 201, description: 'Usuario criado com sucesso.' };
+      return {
+        status: 201,
+        description: 'Usuario criado com sucesso.',
+      };
     } catch (error) {
       return new HttpException(
         {
           status: HttpStatus.FORBIDDEN,
-          error: 'Não foi possível criar o usuário.',
+          error: 'Não foi possível criar o usuário.' + error,
         },
         HttpStatus.FORBIDDEN,
       );

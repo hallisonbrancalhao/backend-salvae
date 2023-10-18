@@ -4,18 +4,32 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/users.entity';
 import * as bcrypt from 'bcryptjs';
 import { Inject, Injectable } from '@nestjs/common';
+import { Endereco } from './entities/endereco.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject('USER_REPOSITORY')
     private readonly userRepository: Repository<User>,
+    @Inject('ENDERECO_REPOSITORY')
+    private readonly enderecoRepository: Repository<Endereco>,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     const hashedPass = await this.userHash(createUserDto.senha);
     createUserDto.senha = hashedPass;
-    return this.userRepository.save(createUserDto);
+
+    const { endereco, ...dataUser } = createUserDto;
+
+    const newUser = this.userRepository.create(dataUser);
+    const userCreated = await this.userRepository.save(newUser);
+
+    const newEndereco = this.enderecoRepository.create({
+      ...endereco,
+      user: userCreated,
+    });
+
+    return await this.enderecoRepository.save(newEndereco);
   }
 
   async findAll() {
@@ -25,9 +39,11 @@ export class UsersService {
         'sobrenome',
         'email',
         'CPF',
-        'telefone',
         'dataNascimento',
+        'telefone',
+        'endereco',
       ],
+      relations: ['endereco'],
     });
   }
 
@@ -41,12 +57,17 @@ export class UsersService {
         'CPF',
         'telefone',
         'dataNascimento',
+        'endereco',
       ],
+      relations: ['endereco'],
     });
   }
 
   findUser(email: string) {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({
+      where: { email },
+      relations: ['endereco'],
+    });
   }
 
   async update(email: string, updateUserDto: UpdateUserDto) {

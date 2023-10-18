@@ -1,0 +1,23 @@
+###
+POST http://localhost:3000/usuario
+```
+Content-Type: application/json,
+{
+  "nome": "Hallison",
+  "sobrenome": "Brancalhao",
+  "email": "hallison@brancalhao.com.br",
+  "senha": "123123",
+  "CPF": 10947933964,
+  "endereco": {
+    "cep": 12345678,
+    "numero": "123 B",
+    "logradouro": "Avenida Brasil",
+    "bairro": "Centro",
+    "cidade": "Maringá",
+    "estado": "Paraná",
+    "pais": "Brasil",
+    "coordenadas": "-23.420999, -51.933056"
+  },
+  "dataNascimento": "16/04/1999",
+  "telefone": 43984362292
+}

@@ -7,7 +7,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
-import { CreateEnderecoDto } from 'src/endereco/dto/create-endereco.dto';
+import { CreateEnderecoDto } from './create-endereco.dto';
 
 export class CreateUserDto {
   @ApiProperty()
@@ -33,8 +33,7 @@ export class CreateUserDto {
   @IsNotEmpty()
   CPF: number;
 
-  @ApiProperty()
-  @Type(() => CreateEnderecoDto)
+  @ApiProperty({ type: CreateEnderecoDto })
   endereco: CreateEnderecoDto;
 
   @ApiProperty()

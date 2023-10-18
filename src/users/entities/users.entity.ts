@@ -16,7 +16,7 @@ import {
   IsDate,
   IsOptional,
 } from '@nestjs/class-validator';
-import { Endereco } from 'src/endereco/entities/endereco.entity';
+import { Endereco } from './endereco.entity';
 
 @Entity('user')
 export class User {
@@ -48,8 +48,10 @@ export class User {
   @IsNotEmpty()
   CPF: number;
 
-  @OneToOne(() => Endereco, (endereco) => endereco.user)
-  @IsOptional()
+  @OneToOne(() => Endereco, (endereco) => endereco.user, {
+    cascade: true,
+    eager: false,
+  })
   endereco: Endereco;
 
   @Column()
