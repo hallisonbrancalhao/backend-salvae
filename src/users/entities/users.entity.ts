@@ -6,15 +6,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  JoinColumn,
 } from 'typeorm';
 import {
   IsEmail,
   IsNotEmpty,
   IsNumber,
   IsString,
-  IsDate,
-  IsOptional,
 } from '@nestjs/class-validator';
 import { Endereco } from './endereco.entity';
 
