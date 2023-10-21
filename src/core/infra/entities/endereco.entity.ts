@@ -4,7 +4,6 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
-  OneToOne,
 } from 'typeorm';
 import {
   IsString,
@@ -15,7 +14,6 @@ import {
   IsNumber,
 } from '@nestjs/class-validator';
 import { User } from 'src/core/infra/entities/users.entity';
-import { Coordenadas } from 'src/core/infra/entities/coordenadas.entity';
 
 @Entity({ name: 'Endereco' })
 export class Endereco {

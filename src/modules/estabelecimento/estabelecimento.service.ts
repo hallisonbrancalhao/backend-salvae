@@ -35,16 +35,13 @@ export class EstabelecimentoService {
     const hashedPass = await bcrypt.hash(createEstabelecimentoDto.senha, 10);
     dataEstabelecimento.senha = hashedPass;
 
-    // Criando a entidade Coordenadas
     const coordenadasEntity = this.coordenadasRepository.create({
       latitude,
       longitude,
     });
 
-    // Criando a entidade Endereço
     const enderecoEntity = this.enderecoRepository.create(endereco);
 
-    // Criando a entidade Estabelecimento
     const estabelecimentoEntity = this.estabelecimentoRepository.create({
       ...dataEstabelecimento,
       coordenadas: coordenadasEntity,
@@ -122,12 +119,27 @@ export class EstabelecimentoService {
     }
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
-    await this.estabelecimentoRepository.save(estabelecimentoEntity);
+    console.log(
+      'EstabelecimentoService : estabelecimentoEntity:',
+      estabelecimentoEntity,
+    );
+    await this.estabelecimentoRepository.update(
+      { cnpj },
+      estabelecimentoEntity,
+    );
 
     return estabelecimentoEntity;
   }
 
-  async delete(cnpj: string) {
-    return await this.estabelecimentoRepository.softDelete({ cnpj });
+  async delete(cnpj: string): Promise<Object> {
+    try {
+      await this.estabelecimentoRepository.update({ cnpj }, { status: false });
+      await this.estabelecimentoRepository.softDelete({ cnpj });
+      return { message: 'Estabelecimento deletado com sucesso' };
+    } catch (error) {
+      return {
+        erro: 'Não foi possível deletar o estabelecimento' + error.message,
+      };
+    }
   }
 }

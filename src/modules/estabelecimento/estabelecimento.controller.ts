@@ -21,7 +21,6 @@ import {
 import { EstabelecimentoService } from './estabelecimento.service';
 import {
   AuthEstabelecimentoGuard,
-  AuthUserGuard,
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
 } from 'src/core/infra';
@@ -70,17 +69,17 @@ export class EstabelecimentoController {
     } catch (error) {
       throw new HttpException(
         {
-          status: HttpStatus.NOT_FOUND,
-          error: 'Nenhum estabelecimento encontrado.',
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Nenhum estabelecimento encontrado.' + error.message,
         },
-        HttpStatus.NOT_FOUND,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
 
   @ApiOperation({ summary: 'Encontrar estabelecimento por ' })
   @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
-  @ApiResponse({ status: 200, description: 'Estabelecimento encontrado' })
+  @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })
   @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
   @ApiParam({
     name: 'Cnpj',
@@ -95,10 +94,10 @@ export class EstabelecimentoController {
     } catch (error) {
       throw new HttpException(
         {
-          status: HttpStatus.NOT_FOUND,
-          error: 'Estabelecimento não encontrado',
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
         },
-        HttpStatus.NOT_FOUND,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -128,10 +127,10 @@ export class EstabelecimentoController {
     } catch (error) {
       throw new HttpException(
         {
-          status: HttpStatus.NOT_MODIFIED,
-          error: 'Não foi possível alterar o estabelecimento.',
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Não foi possível alterar o estabelecimento.' + error.message,
         },
-        HttpStatus.NOT_MODIFIED,
+        HttpStatus.BAD_REQUEST,
       );
     }
   }
@@ -155,10 +154,10 @@ export class EstabelecimentoController {
     } catch (error) {
       throw new HttpException(
         {
-          status: HttpStatus.NOT_FOUND,
-          error: 'Não foi possível excluir o estabelecimento.',
+          status: HttpStatus.BAD_GATEWAY,
+          error: 'Não foi possível excluir o estabelecimento.' + error.message,
         },
-        HttpStatus.NOT_FOUND,
+        HttpStatus.BAD_GATEWAY,
       );
     }
   }

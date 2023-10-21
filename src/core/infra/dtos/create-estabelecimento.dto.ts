@@ -1,13 +1,6 @@
-import {
-  IsNotEmpty,
-  IsString,
-  IsNumber,
-  IsOptional,
-  IsBase64,
-} from '@nestjs/class-validator';
+import { IsNotEmpty, IsString, IsOptional } from '@nestjs/class-validator';
 import { CreateEnderecoEstabelecimentoDto } from './create-endereco-estabelecimento.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Coordenadas } from '../entities';
 
 export class CreateEstabelecimentoDto {
   @ApiProperty()

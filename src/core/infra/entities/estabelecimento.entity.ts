@@ -7,14 +7,9 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsOptional,
-} from '@nestjs/class-validator';
+import { IsNotEmpty, IsNumber, IsString } from '@nestjs/class-validator';
 import { EnderecoEstabelecimento } from './endereco-estabelecimento.entity';
 import { Coordenadas } from './coordenadas.entity';
 
@@ -23,17 +18,21 @@ export class Estabelecimento {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => EnderecoEstabelecimento, { cascade: true })
+  @OneToOne(() => EnderecoEstabelecimento, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   endereco: EnderecoEstabelecimento;
 
-  @OneToOne(() => Coordenadas, { cascade: true })
+  @OneToOne(() => Coordenadas, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   coordenadas: Coordenadas;
 
   @Column()
   @IsString({ message: 'O cnpj deve ser uma string' })
   @IsNotEmpty()
+  @Unique(['cnpj'])
   cnpj: string;
 
   @Column()
