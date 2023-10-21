@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthUserModule } from './modules/auth/user/auth-user.module';
 import { DatabaseModule } from './database/database.module';
-import { EnderecoModule } from './endereco/endereco.module';
+import { EstabelecimentoModule } from './modules/estabelecimento/estabelecimento.module';
+import { AuthEstabelecimentoModule } from './modules/auth/estabelecimento/auth-estabelecimento.module';
 
 @Module({
   imports: [
@@ -14,10 +13,9 @@ import { EnderecoModule } from './endereco/endereco.module';
     ConfigModule.forRoot(),
     DatabaseModule,
     UsersModule,
-    AuthModule,
-    EnderecoModule,
+    EstabelecimentoModule,
+    AuthUserModule,
+    AuthEstabelecimentoModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
