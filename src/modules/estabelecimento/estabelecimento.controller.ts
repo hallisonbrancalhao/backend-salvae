@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { EstabelecimentoService } from './estabelecimento.service';
 import {
+  AuthEstabelecimentoGuard,
   AuthUserGuard,
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
@@ -61,7 +62,7 @@ export class EstabelecimentoController {
   @ApiOperation({ summary: 'Listar todos estabelecimentos' })
   @ApiResponse({ status: 200, description: 'Lista de estabelecimentos' })
   @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
-  @UseGuards(AuthUserGuard)
+  @UseGuards(AuthEstabelecimentoGuard)
   @Get()
   async findAll() {
     try {
@@ -86,7 +87,7 @@ export class EstabelecimentoController {
     type: 'string',
     description: 'Cnpj do estabelecimento',
   })
-  @UseGuards(AuthUserGuard)
+  @UseGuards(AuthEstabelecimentoGuard)
   @Get(':cnpj')
   async findOne(@Param('cnpj') cnpj: string) {
     try {
@@ -116,7 +117,7 @@ export class EstabelecimentoController {
     type: 'string',
     description: 'Cnpj do estabelecimento',
   })
-  @UseGuards(AuthUserGuard)
+  @UseGuards(AuthEstabelecimentoGuard)
   @Patch(':cnpj')
   async update(
     @Param('cnpj') cnpj: string,
@@ -146,7 +147,7 @@ export class EstabelecimentoController {
     type: 'string',
     description: 'cnpj do estabelecimento ',
   })
-  @UseGuards(AuthUserGuard)
+  @UseGuards(AuthEstabelecimentoGuard)
   @Delete(':cnpj')
   async delete(@Param('cnpj') cnpj: string) {
     try {

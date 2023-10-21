@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import {
   IsString,
@@ -11,7 +12,6 @@ import {
   IsOptional,
   MaxLength,
   MinLength,
-  IsNumber,
 } from '@nestjs/class-validator';
 import { Estabelecimento } from './estabelecimento.entity';
 
@@ -20,14 +20,10 @@ export class EnderecoEstabelecimento {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(
+  @OneToOne(
     () => Estabelecimento,
     (estabelecimento) => estabelecimento.endereco,
-    {
-      onDelete: 'CASCADE',
-    },
   )
-  @JoinColumn({ name: 'estabelecimentoId' })
   estabelecimento: Estabelecimento;
 
   @Column()

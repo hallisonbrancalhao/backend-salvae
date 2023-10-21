@@ -7,7 +7,6 @@ import {
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
   Coordenadas,
-  Mapa,
 } from 'src/core/infra';
 import { GeocodingService } from 'src/utilities';
 
@@ -20,8 +19,6 @@ export class EstabelecimentoService {
     private readonly enderecoRepository: Repository<EnderecoEstabelecimento>,
     @Inject('COORDENADAS')
     private readonly coordenadasRepository: Repository<Coordenadas>,
-    @Inject('MAPA')
-    private readonly mapaRepository: Repository<Mapa>,
     @Inject('DATABASE_CONNECTION')
     private readonly myDataSource: DataSource,
     private readonly geocodingService: GeocodingService,
@@ -34,40 +31,28 @@ export class EstabelecimentoService {
       endereco.cep,
       endereco.numero,
     );
+
     const hashedPass = await bcrypt.hash(createEstabelecimentoDto.senha, 10);
     dataEstabelecimento.senha = hashedPass;
 
+    // Criando a entidade Coordenadas
     const coordenadasEntity = this.coordenadasRepository.create({
       latitude,
       longitude,
     });
 
+    // Criando a entidade Endereço
     const enderecoEntity = this.enderecoRepository.create(endereco);
-    console.log(
-      'EstabelecimentoService : create : enderecoEntity:',
-      enderecoEntity,
-    );
 
+    // Criando a entidade Estabelecimento
     const estabelecimentoEntity = this.estabelecimentoRepository.create({
       ...dataEstabelecimento,
       coordenadas: coordenadasEntity,
       endereco: enderecoEntity,
     });
-    console.log(
-      'EstabelecimentoService : create : estabelecimentoEntity:',
-      estabelecimentoEntity,
-    );
-
-    const coordenadasMapaEntity = this.mapaRepository.create(coordenadasEntity);
-
-    const mapaEntity = this.mapaRepository.create({
-      coordenadas: coordenadasMapaEntity,
-    });
-    console.log('EstabelecimentoService : create : mapaEntity:', mapaEntity);
 
     await this.myDataSource.transaction(async (transactionalEntityManager) => {
       await transactionalEntityManager.save(estabelecimentoEntity);
-      await transactionalEntityManager.save(mapaEntity);
     });
 
     return estabelecimentoEntity;
@@ -84,8 +69,10 @@ export class EstabelecimentoService {
         'estabelecimento.fotoCapa',
         'estabelecimento.fotoPerfil',
         'endereco',
+        'coordenadas',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
+      .leftJoin('estabelecimento.coordenadas', 'coordenadas')
       .orderBy('estabelecimento.nome')
       .getMany();
   }
@@ -100,9 +87,12 @@ export class EstabelecimentoService {
         'estabelecimento.whatsapp',
         'estabelecimento.fotoCapa',
         'estabelecimento.fotoPerfil',
+        'estabelecimento.senha',
         'endereco',
+        'coordenadas',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
+      .leftJoin('estabelecimento.coordenadas', 'coordenadas')
       .where('estabelecimento.cnpj = :cnpj', { cnpj })
       .getOneOrFail();
   }

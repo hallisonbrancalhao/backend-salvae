@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { EnderecoEstabelecimento } from 'src/core/infra/entities/endereco-estabelecimento.entity';
@@ -45,7 +49,7 @@ export class AuthEstabelecimentoService {
         estabelecimento: payload,
       };
     } catch (error) {
-      return new UnauthorizedException({ error: error });
+      return new BadRequestException({ message: error.message });
     }
   }
 }

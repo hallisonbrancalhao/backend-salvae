@@ -1,4 +1,4 @@
-import { IsEmail } from '@nestjs/class-validator';
+import { IsEmail, IsString } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserLoginDto {
@@ -7,5 +7,6 @@ export class UserLoginDto {
   email: string;
 
   @ApiProperty()
+  @IsString({ message: 'A senha precisa ser válida' })
   senha: string;
 }

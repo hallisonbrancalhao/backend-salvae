@@ -8,5 +8,6 @@ export class EstabelecimentoLoginDto {
   cnpj: string;
 
   @ApiProperty()
+  @IsString({ message: 'A senha precisa ser válida' })
   senha: string;
 }

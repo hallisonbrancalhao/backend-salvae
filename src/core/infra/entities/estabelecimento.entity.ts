@@ -23,6 +23,14 @@ export class Estabelecimento {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @OneToOne(() => EnderecoEstabelecimento, { cascade: true })
+  @JoinColumn()
+  endereco: EnderecoEstabelecimento;
+
+  @OneToOne(() => Coordenadas, { cascade: true })
+  @JoinColumn()
+  coordenadas: Coordenadas;
+
   @Column()
   @IsString({ message: 'O cnpj deve ser uma string' })
   @IsNotEmpty()
@@ -37,23 +45,6 @@ export class Estabelecimento {
   @IsString({ message: 'A senha deve ser uma string' })
   @IsNotEmpty()
   senha: string;
-
-  @OneToOne(
-    () => EnderecoEstabelecimento,
-    (endereco) => endereco.estabelecimento,
-    {
-      cascade: true,
-      eager: true,
-    },
-  )
-  @IsOptional()
-  endereco: EnderecoEstabelecimento;
-
-  @OneToOne(() => Coordenadas, (coordenadas) => coordenadas.estabelecimento, {
-    cascade: true,
-    eager: true,
-  })
-  coordenadas: Coordenadas;
 
   @Column({ type: 'varchar' })
   @IsNumber({}, { message: 'O whatsapp deve conter apenas números' })

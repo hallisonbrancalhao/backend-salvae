@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { Estabelecimento } from './estabelecimento.entity';
 import { IsString } from '@nestjs/class-validator';
-import { Mapa } from './mapa.entity';
 
 @Entity({ name: 'Coordenadas' })
 export class Coordenadas {
@@ -23,18 +22,9 @@ export class Coordenadas {
   @IsString({ message: 'A longitude deve ser uma string' })
   longitude: string;
 
-  @ManyToOne(() => Mapa, (mapa) => mapa.coordenadas, {
-    onDelete: 'CASCADE',
-  })
-  mapa: Mapa;
-
   @OneToOne(
     () => Estabelecimento,
     (estabelecimento) => estabelecimento.coordenadas,
-    {
-      onDelete: 'CASCADE',
-    },
   )
-  @JoinColumn({ name: 'estabelecimentoId' })
   estabelecimento: Estabelecimento;
 }
