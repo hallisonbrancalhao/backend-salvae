@@ -1,3 +1,4 @@
+export * from './coordenadas.dto';
 export * from './create-endereco-estabelecimento.dto';
 export * from './create-endereco.dto';
 export * from './create-estabelecimento.dto';

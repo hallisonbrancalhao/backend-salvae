@@ -27,7 +27,7 @@ export class EnderecoEstabelecimento {
       onDelete: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'estabelecimentoId' })
   estabelecimento: Estabelecimento;
 
   @Column()
@@ -71,9 +71,4 @@ export class EnderecoEstabelecimento {
   @IsString({ message: 'O país deve ser uma string' })
   @IsNotEmpty({ message: 'O país deve ser preenchido' })
   pais: string;
-
-  @Column()
-  @IsOptional()
-  @IsString({ message: 'As coordenadas devem ser uma string' })
-  coordenadas: string;
 }

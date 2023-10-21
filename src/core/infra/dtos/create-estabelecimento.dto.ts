@@ -7,7 +7,7 @@ import {
 } from '@nestjs/class-validator';
 import { CreateEnderecoEstabelecimentoDto } from './create-endereco-estabelecimento.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { CoordenadasDto } from './coordenadas.dto';
+import { Coordenadas } from '../entities';
 
 export class CreateEstabelecimentoDto {
   @ApiProperty()
@@ -30,7 +30,7 @@ export class CreateEstabelecimentoDto {
   endereco: CreateEnderecoEstabelecimentoDto;
 
   @ApiProperty()
-  @IsNumber({}, { message: 'O whatsapp deve conter apenas números' })
+  @IsString({ message: 'O whatsapp deve ser válido' })
   @IsNotEmpty()
   whatsapp: string;
 
@@ -40,12 +40,12 @@ export class CreateEstabelecimentoDto {
   instagram: string;
 
   @ApiProperty()
-  @IsBase64({ message: 'A foto de perfil deve ser convertida para Base64' })
+  @IsString({ message: 'A foto de perfil deve ser convertida para Base64' })
   @IsNotEmpty()
   fotoPerfil: string;
 
   @ApiProperty()
-  @IsBase64({ message: 'A foto de capa deve ser convertida para Base64' })
+  @IsString({ message: 'A foto de capa deve ser convertida para Base64' })
   @IsNotEmpty()
   fotoCapa: string;
 

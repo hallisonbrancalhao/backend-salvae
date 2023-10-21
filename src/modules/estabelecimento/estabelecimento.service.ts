@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { Inject, Injectable } from '@nestjs/common';
 import {
@@ -9,7 +9,7 @@ import {
   Coordenadas,
   Mapa,
 } from 'src/core/infra';
-import { getCoordinates } from 'src/utilities';
+import { GeocodingService } from 'src/utilities';
 
 @Injectable()
 export class EstabelecimentoService {
@@ -22,92 +22,122 @@ export class EstabelecimentoService {
     private readonly coordenadasRepository: Repository<Coordenadas>,
     @Inject('MAPA')
     private readonly mapaRepository: Repository<Mapa>,
+    @Inject('DATABASE_CONNECTION')
+    private readonly myDataSource: DataSource,
+    private readonly geocodingService: GeocodingService,
   ) {}
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto) {
-    const hashedPass = await this.userHash(createEstabelecimentoDto.senha);
-    createEstabelecimentoDto.senha = hashedPass;
-
     const { endereco, ...dataEstabelecimento } = createEstabelecimentoDto;
 
-    const getCoordenadas = await getCoordinates(endereco.cep, endereco.numero);
+    const { latitude, longitude } = await this.geocodingService.getCoordinates(
+      endereco.cep,
+      endereco.numero,
+    );
+    const hashedPass = await bcrypt.hash(createEstabelecimentoDto.senha, 10);
+    dataEstabelecimento.senha = hashedPass;
 
     const coordenadasEntity = this.coordenadasRepository.create({
-      latitude: getCoordenadas.latitude,
-      longitude: getCoordenadas.longitude,
+      latitude,
+      longitude,
     });
-    const enderecoEntity = this.enderecoRepository.create({
-      ...endereco,
-    });
+
+    const enderecoEntity = this.enderecoRepository.create(endereco);
+    console.log(
+      'EstabelecimentoService : create : enderecoEntity:',
+      enderecoEntity,
+    );
+
     const estabelecimentoEntity = this.estabelecimentoRepository.create({
       ...dataEstabelecimento,
       coordenadas: coordenadasEntity,
       endereco: enderecoEntity,
     });
+    console.log(
+      'EstabelecimentoService : create : estabelecimentoEntity:',
+      estabelecimentoEntity,
+    );
+
+    const coordenadasMapaEntity = this.mapaRepository.create(coordenadasEntity);
 
     const mapaEntity = this.mapaRepository.create({
-      coordenadas: coordenadasEntity,
+      coordenadas: coordenadasMapaEntity,
+    });
+    console.log('EstabelecimentoService : create : mapaEntity:', mapaEntity);
+
+    await this.myDataSource.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.save(estabelecimentoEntity);
+      await transactionalEntityManager.save(mapaEntity);
     });
 
-    await this.coordenadasRepository.save(coordenadasEntity);
-    await this.enderecoRepository.save(enderecoEntity);
-    await this.mapaRepository.save(mapaEntity);
-    return await this.estabelecimentoRepository.save(estabelecimentoEntity);
+    return estabelecimentoEntity;
   }
 
   async findAll() {
-    return await this.estabelecimentoRepository.find({
-      select: [
-        'nome',
-        'cnpj',
-        'instagram',
-        'whatsapp',
+    return await this.estabelecimentoRepository
+      .createQueryBuilder('estabelecimento')
+      .select([
+        'estabelecimento.nome',
+        'estabelecimento.cnpj',
+        'estabelecimento.instagram',
+        'estabelecimento.whatsapp',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
         'endereco',
-        'fotoCapa',
-        'fotoPerfil',
-      ],
-      relations: ['endereco'],
-    });
+      ])
+      .leftJoin('estabelecimento.endereco', 'endereco')
+      .orderBy('estabelecimento.nome')
+      .getMany();
   }
 
-  findOne(cnpj: string) {
-    return this.estabelecimentoRepository.findOne({
-      where: { cnpj },
-      select: [
-        'nome',
-        'cnpj',
-        'instagram',
-        'whatsapp',
+  async findOne(cnpj: string) {
+    return await this.estabelecimentoRepository
+      .createQueryBuilder('estabelecimento')
+      .select([
+        'estabelecimento.nome',
+        'estabelecimento.cnpj',
+        'estabelecimento.instagram',
+        'estabelecimento.whatsapp',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
         'endereco',
-        'fotoCapa',
-        'fotoPerfil',
-      ],
-      relations: ['endereco'],
-    });
-  }
-
-  findUser(cnpj: string) {
-    return this.estabelecimentoRepository.findOne({
-      where: { cnpj },
-      relations: ['endereco'],
-    });
+      ])
+      .leftJoin('estabelecimento.endereco', 'endereco')
+      .where('estabelecimento.cnpj = :cnpj', { cnpj })
+      .getOneOrFail();
   }
 
   async update(
     cnpj: string,
     updateEstabelecimentoDto: UpdateEstabelecimentoDto,
   ) {
-    await this.estabelecimentoRepository.update(cnpj, updateEstabelecimentoDto);
-    return this.findOne(cnpj);
+    const estabelecimentoEntity = await this.findOne(cnpj);
+    const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
+
+    if (endereco) {
+      const { latitude, longitude } =
+        await this.geocodingService.getCoordinates(
+          endereco.cep,
+          endereco.numero,
+        );
+      const coordenadasEntity = this.coordenadasRepository.create({
+        latitude,
+        longitude,
+      });
+      const enderecoEntity = this.enderecoRepository.create(endereco);
+      estabelecimentoEntity.endereco = enderecoEntity;
+      estabelecimentoEntity.coordenadas = coordenadasEntity;
+      await this.coordenadasRepository.save(coordenadasEntity);
+      await this.enderecoRepository.save(enderecoEntity);
+    }
+
+    Object.assign(estabelecimentoEntity, dataEstabelecimento);
+    await this.estabelecimentoRepository.save(estabelecimentoEntity);
+
+    return estabelecimentoEntity;
   }
 
-  delete(cnpj: string) {
-    return this.estabelecimentoRepository.softDelete({ cnpj });
-  }
-
-  private async userHash(pass: string): Promise<string> {
-    const saltOrRounds = 10;
-    const hashedPass = await bcrypt.hash(pass, saltOrRounds);
-    return hashedPass;
+  async delete(cnpj: string) {
+    return await this.estabelecimentoRepository.softDelete({ cnpj });
   }
 }

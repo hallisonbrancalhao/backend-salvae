@@ -49,6 +49,7 @@ export class User {
 
   @OneToOne(() => Endereco, (endereco) => endereco.user)
   @IsOptional()
+  @JoinColumn({ name: 'enderecoId' })
   endereco: Endereco;
 
   @Column()

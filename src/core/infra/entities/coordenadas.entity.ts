@@ -7,7 +7,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Estabelecimento } from './estabelecimento.entity';
-import { IsNotEmpty, IsString } from '@nestjs/class-validator';
+import { IsString } from '@nestjs/class-validator';
 import { Mapa } from './mapa.entity';
 
 @Entity({ name: 'Coordenadas' })
@@ -17,12 +17,10 @@ export class Coordenadas {
 
   @Column({ type: 'varchar' })
   @IsString({ message: 'A longitude deve ser uma string' })
-  @IsNotEmpty({ message: 'A latitude deve ser preenchida' })
   latitude: string;
 
   @Column({ type: 'varchar' })
   @IsString({ message: 'A longitude deve ser uma string' })
-  @IsNotEmpty({ message: 'A longitude deve ser preenchida' })
   longitude: string;
 
   @ManyToOne(() => Mapa, (mapa) => mapa.coordenadas, {
@@ -37,6 +35,6 @@ export class Coordenadas {
       onDelete: 'CASCADE',
     },
   )
-  @JoinColumn({ name: 'estabelecimento_id' })
+  @JoinColumn({ name: 'estabelecimentoId' })
   estabelecimento: Estabelecimento;
 }

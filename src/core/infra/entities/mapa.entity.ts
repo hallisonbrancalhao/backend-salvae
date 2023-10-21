@@ -9,6 +9,6 @@ export class Mapa {
   @OneToMany(() => Coordenadas, (coordenadas) => coordenadas.mapa, {
     cascade: true,
   })
-  @JoinColumn({ name: 'coordenadas_id' })
+  @JoinColumn({ name: 'coordenadasId' })
   coordenadas: Coordenadas;
 }
