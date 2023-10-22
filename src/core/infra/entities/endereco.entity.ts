@@ -1,17 +1,10 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
 import {
   IsString,
   IsNotEmpty,
   IsOptional,
   MaxLength,
   MinLength,
-  IsNumber,
 } from '@nestjs/class-validator';
 import { User } from 'src/core/infra/entities/users.entity';
 
@@ -20,14 +13,11 @@ export class Endereco {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => User, (user) => user.endereco, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'user_id' })
+  @OneToOne(() => User, (user) => user.endereco)
   user: User;
 
   @Column()
-  @IsNumber({}, { message: 'O CEP deve ser um número' })
+  @IsString({ message: 'O CEP deve ser string' })
   @IsNotEmpty({ message: 'O CEP deve ser preenchido' })
   @MinLength(8, { message: 'O CEP deve conter 8 dígitos' })
   @MaxLength(8, { message: 'O CEP deve conter 8 dígitos' })

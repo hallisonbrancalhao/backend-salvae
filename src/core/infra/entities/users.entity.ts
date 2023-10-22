@@ -7,14 +7,9 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-  IsOptional,
-} from '@nestjs/class-validator';
+import { IsEmail, IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { Endereco } from './endereco.entity';
 
 @Entity({ name: 'Usuario' })
@@ -35,6 +30,7 @@ export class User {
   @Column()
   @IsEmail({}, { message: 'O email deve ser um email válido' })
   @IsNotEmpty()
+  @Unique(['email'])
   email: string;
 
   @Column()
@@ -42,14 +38,14 @@ export class User {
   @IsNotEmpty()
   senha: string;
 
-  @Column({ type: 'bigint' })
+  @Column()
   @IsString({ message: 'O CPF deve ser válido' })
   @IsNotEmpty()
+  @Unique(['CPF'])
   CPF: string;
 
-  @OneToOne(() => Endereco, (endereco) => endereco.user)
-  @IsOptional()
-  @JoinColumn({ name: 'enderecoId' })
+  @OneToOne(() => Endereco, { cascade: true, onDelete: 'CASCADE' })
+  @JoinColumn()
   endereco: Endereco;
 
   @Column()
@@ -57,10 +53,10 @@ export class User {
   @IsNotEmpty()
   dataNascimento: string;
 
-  @Column({ type: 'bigint' })
-  @IsNumber({}, { message: 'O telefone deve conter apenas números' })
+  @Column()
+  @IsString({ message: 'O telefone deve ser válido' })
   @IsNotEmpty()
-  telefone: number;
+  telefone: string;
 
   @CreateDateColumn({
     type: 'timestamp',

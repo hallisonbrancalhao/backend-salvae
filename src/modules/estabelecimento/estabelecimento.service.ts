@@ -9,6 +9,7 @@ import {
   Coordenadas,
 } from 'src/core/infra';
 import { GeocodingService } from 'src/utilities';
+import { PasswordHasherService } from 'src/utilities/password-hasher';
 
 @Injectable()
 export class EstabelecimentoService {
@@ -22,6 +23,7 @@ export class EstabelecimentoService {
     @Inject('DATABASE_CONNECTION')
     private readonly myDataSource: DataSource,
     private readonly geocodingService: GeocodingService,
+    private readonly hasher: PasswordHasherService,
   ) {}
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto) {
@@ -32,7 +34,9 @@ export class EstabelecimentoService {
       endereco.numero,
     );
 
-    const hashedPass = await bcrypt.hash(createEstabelecimentoDto.senha, 10);
+    const hashedPass = await this.hasher.hashPassword(
+      createEstabelecimentoDto.senha,
+    );
     dataEstabelecimento.senha = hashedPass;
 
     const coordenadasEntity = this.coordenadasRepository.create({
@@ -119,10 +123,6 @@ export class EstabelecimentoService {
     }
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
-    console.log(
-      'EstabelecimentoService : estabelecimentoEntity:',
-      estabelecimentoEntity,
-    );
     await this.estabelecimentoRepository.update(
       { cnpj },
       estabelecimentoEntity,
