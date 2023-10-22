@@ -1,15 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateEnderecoDto {
   @ApiProperty({ example: '12345678' })
-  @IsNumber({}, { message: 'O CEP deve ser um número' })
+  @IsString({ message: 'O CEP deve ser um número' })
   @IsNotEmpty({ message: 'O CEP deve ser preenchido' })
   cep: string;
 
   @ApiProperty()
   @IsOptional()
-  complemento?: string | null;
+  complemento: string | null;
 
   @ApiProperty({ example: '123 B' })
   @IsString({ message: 'O número deve ser uma string' })

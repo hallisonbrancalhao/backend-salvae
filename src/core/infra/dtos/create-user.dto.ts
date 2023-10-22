@@ -1,7 +1,7 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
+  IsOptional,
   IsString,
 } from '@nestjs/class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -25,6 +25,7 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty()
+  @IsString({ message: 'A senha deve ser uma string' })
   senha: string;
 
   @ApiProperty()
@@ -32,7 +33,8 @@ export class CreateUserDto {
   @IsNotEmpty()
   CPF: string;
 
-  @ApiProperty({ type: CreateEnderecoDto })
+  @ApiProperty({ type: CreateEnderecoDto, required: false })
+  @IsOptional()
   endereco: CreateEnderecoDto;
 
   @ApiProperty()
@@ -41,7 +43,7 @@ export class CreateUserDto {
   dataNascimento: string;
 
   @ApiProperty()
-  @IsNumber({}, { message: 'O telefone deve conter apenas números' })
+  @IsString({ message: 'O telefone deve conter apenas números' })
   @IsNotEmpty()
-  telefone: number;
+  telefone: string;
 }

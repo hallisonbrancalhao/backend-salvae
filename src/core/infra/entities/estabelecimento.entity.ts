@@ -9,7 +9,7 @@ import {
   JoinColumn,
   Unique,
 } from 'typeorm';
-import { IsNotEmpty, IsNumber, IsString } from '@nestjs/class-validator';
+import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { EnderecoEstabelecimento } from './endereco-estabelecimento.entity';
 import { Coordenadas } from './coordenadas.entity';
 
@@ -46,12 +46,12 @@ export class Estabelecimento {
   senha: string;
 
   @Column({ type: 'varchar' })
-  @IsNumber({}, { message: 'O whatsapp deve conter apenas números' })
+  @IsString({ message: 'O whatsapp deve conter apenas números' })
   @IsNotEmpty()
   whatsapp: string;
 
   @Column({ type: 'varchar' })
-  @IsNumber({}, { message: 'O whatsapp deve conter apenas números' })
+  @IsString({ message: 'O instagram deve conter apenas números' })
   @IsNotEmpty()
   instagram: string;
 
