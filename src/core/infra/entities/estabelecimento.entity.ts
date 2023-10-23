@@ -8,10 +8,12 @@ import {
   OneToOne,
   JoinColumn,
   Unique,
+  OneToMany,
 } from 'typeorm';
 import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { EnderecoEstabelecimento } from './endereco-estabelecimento.entity';
 import { Coordenadas } from './coordenadas.entity';
+import { EstabelecimentoModalidade } from './estabelecimento-modalidade.entity';
 
 @Entity('Estabelecimento')
 export class Estabelecimento {
@@ -24,6 +26,15 @@ export class Estabelecimento {
   })
   @JoinColumn()
   endereco: EnderecoEstabelecimento;
+
+  @OneToMany(
+    () => EstabelecimentoModalidade,
+    (modalidade) => modalidade.estabelecimento,
+    {
+      cascade: true,
+    },
+  )
+  modalidade: EstabelecimentoModalidade[];
 
   @OneToOne(() => Coordenadas, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
