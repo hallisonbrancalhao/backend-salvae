@@ -133,8 +133,8 @@ export class EstabelecimentoService {
 
   async delete(cnpj: string): Promise<Object> {
     try {
-      await this.estabelecimentoRepository.update({ cnpj }, { status: false });
-      await this.estabelecimentoRepository.softDelete({ cnpj });
+      const estabelecimentoEntity = await this.findOne(cnpj);
+      await this.estabelecimentoRepository.remove(estabelecimentoEntity);
       return { message: 'Estabelecimento deletado com sucesso' };
     } catch (error) {
       return {
