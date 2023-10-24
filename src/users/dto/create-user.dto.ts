@@ -3,34 +3,47 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+} from '@nestjs/class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+
+import { Type } from 'class-transformer';
+import { CreateEnderecoDto } from 'src/endereco/dto/create-endereco.dto';
 
 export class CreateUserDto {
-  @IsString()
+  @ApiProperty()
+  @IsString({ message: 'O nome deve ser uma string' })
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(50)
-  firstName: string;
+  nome: string;
 
-  @IsString()
+  @ApiProperty()
+  @IsString({ message: 'O sobrenome deve ser uma string' })
   @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(50)
-  lastName: string;
+  sobrenome: string;
 
-  @IsEmail()
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsEmail({}, { message: 'O email deve ser um email válido' })
   email: string;
 
-  @IsString()
-  @MinLength(4)
-  @MaxLength(20)
-  password: string;
+  @ApiProperty()
+  senha: string;
 
-  @IsNumber()
+  @ApiProperty()
+  @IsNumber({}, { message: 'O CPF deve ser um número' })
   @IsNotEmpty()
-  @MinLength(11)
-  @MaxLength(11)
-  cpf: number;
+  CPF: number;
+
+  @ApiProperty()
+  @Type(() => CreateEnderecoDto)
+  endereco: CreateEnderecoDto;
+
+  @ApiProperty()
+  @IsString({ message: 'A data deve ser no formato dd/mm/yyyy' })
+  @IsNotEmpty()
+  dataNascimento: string;
+
+  @ApiProperty()
+  @IsNumber({}, { message: 'O telefone deve conter apenas números' })
+  @IsNotEmpty()
+  telefone: number;
 }
