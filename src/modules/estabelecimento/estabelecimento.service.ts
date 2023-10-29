@@ -63,6 +63,7 @@ export class EstabelecimentoService {
     return await this.estabelecimentoRepository
       .createQueryBuilder('estabelecimento')
       .select([
+        'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
         'estabelecimento.instagram',
@@ -78,10 +79,11 @@ export class EstabelecimentoService {
       .getMany();
   }
 
-  async findOne(cnpj: string) {
+  async findOne(id: string) {
     return await this.estabelecimentoRepository
       .createQueryBuilder('estabelecimento')
       .select([
+        'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
         'estabelecimento.instagram',
@@ -94,15 +96,12 @@ export class EstabelecimentoService {
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
-      .where('estabelecimento.cnpj = :cnpj', { cnpj })
+      .where('estabelecimento.cnpj = :cnpj', { id })
       .getOneOrFail();
   }
 
-  async update(
-    cnpj: string,
-    updateEstabelecimentoDto: UpdateEstabelecimentoDto,
-  ) {
-    const estabelecimentoEntity = await this.findOne(cnpj);
+  async update(id: string, updateEstabelecimentoDto: UpdateEstabelecimentoDto) {
+    const estabelecimentoEntity = await this.findOne(id);
     const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
 
     if (endereco) {
@@ -124,17 +123,17 @@ export class EstabelecimentoService {
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
     await this.estabelecimentoRepository.update(
-      { cnpj },
+      { id: estabelecimentoEntity.id },
       estabelecimentoEntity,
     );
 
     return estabelecimentoEntity;
   }
 
-  async delete(cnpj: string): Promise<Object> {
+  async delete(id: string): Promise<Object> {
     try {
-      await this.estabelecimentoRepository.update({ cnpj }, { status: false });
-      await this.estabelecimentoRepository.softDelete({ cnpj });
+      const estabelecimentoEntity = await this.findOne(id);
+      await this.estabelecimentoRepository.remove(estabelecimentoEntity);
       return { message: 'Estabelecimento deletado com sucesso' };
     } catch (error) {
       return {

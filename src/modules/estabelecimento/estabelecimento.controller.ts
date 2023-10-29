@@ -82,15 +82,15 @@ export class EstabelecimentoController {
   @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })
   @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
   @ApiParam({
-    name: 'Cnpj',
+    name: 'id',
     type: 'string',
-    description: 'Cnpj do estabelecimento',
+    description: 'Id do estabelecimento',
   })
   @UseGuards(AuthEstabelecimentoGuard)
-  @Get(':cnpj')
-  async findOne(@Param('cnpj') cnpj: string) {
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
     try {
-      return await this.estabelecimento.findOne(cnpj);
+      return await this.estabelecimento.findOne(id);
     } catch (error) {
       throw new HttpException(
         {
@@ -112,18 +112,18 @@ export class EstabelecimentoController {
   })
   @ApiBody({ type: UpdateEstabelecimentoDto })
   @ApiParam({
-    name: 'Cnpj',
+    name: 'id',
     type: 'string',
-    description: 'Cnpj do estabelecimento',
+    description: 'id do estabelecimento',
   })
   @UseGuards(AuthEstabelecimentoGuard)
-  @Patch(':cnpj')
+  @Patch(':id')
   async update(
-    @Param('cnpj') cnpj: string,
+    @Param('id') id: string,
     @Body() updateEstabelecimentoDto: UpdateEstabelecimentoDto,
   ) {
     try {
-      return await this.estabelecimento.update(cnpj, updateEstabelecimentoDto);
+      return await this.estabelecimento.update(id, updateEstabelecimentoDto);
     } catch (error) {
       throw new HttpException(
         {
@@ -135,22 +135,22 @@ export class EstabelecimentoController {
     }
   }
 
-  @ApiOperation({ summary: 'Excluir estabelecimento por Cnpj' })
+  @ApiOperation({ summary: 'Excluir estabelecimento por id' })
   @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
   @ApiResponse({
     status: 200,
     description: 'Estabelecimento excluído com sucesso.',
   })
   @ApiParam({
-    name: 'cnpj',
+    name: 'id',
     type: 'string',
-    description: 'cnpj do estabelecimento ',
+    description: 'id do estabelecimento ',
   })
   @UseGuards(AuthEstabelecimentoGuard)
-  @Delete(':cnpj')
-  async delete(@Param('cnpj') cnpj: string) {
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
     try {
-      return await this.estabelecimento.delete(cnpj);
+      return await this.estabelecimento.delete(id);
     } catch (error) {
       throw new HttpException(
         {
