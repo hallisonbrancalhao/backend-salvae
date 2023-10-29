@@ -96,7 +96,7 @@ export class EstabelecimentoService {
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
-      .where('estabelecimento.cnpj = :cnpj', { id })
+      .where('estabelecimento.cnpj = :id', { id })
       .getOneOrFail();
   }
 
