@@ -30,7 +30,8 @@ export class AuthEstabelecimentoService {
     senha: string,
   ): Promise<Response | UnauthorizedException> {
     try {
-      const estabelecimento = await this.estabelecimentoService.findOne(cnpj);
+      const estabelecimento =
+        await this.estabelecimentoService.findByCnpj(cnpj);
       const validPassword: boolean = await bcrypt.compare(
         senha,
         estabelecimento.senha,

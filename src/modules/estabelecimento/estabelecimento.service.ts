@@ -79,6 +79,27 @@ export class EstabelecimentoService {
       .getMany();
   }
 
+  async findByCnpj(cnpj: string) {
+    return this.estabelecimentoRepository
+      .createQueryBuilder('estabelecimento')
+      .select([
+        'estabelecimento.id',
+        'estabelecimento.nome',
+        'estabelecimento.cnpj',
+        'estabelecimento.instagram',
+        'estabelecimento.whatsapp',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
+        'estabelecimento.senha',
+        'endereco',
+        'coordenadas',
+      ])
+      .leftJoin('estabelecimento.endereco', 'endereco')
+      .leftJoin('estabelecimento.coordenadas', 'coordenadas')
+      .where('estabelecimento.cnpj = :cnpj', { cnpj })
+      .getOneOrFail();
+  }
+
   async findOne(id: string) {
     return await this.estabelecimentoRepository
       .createQueryBuilder('estabelecimento')
