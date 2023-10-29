@@ -63,6 +63,7 @@ export class EstabelecimentoService {
     return await this.estabelecimentoRepository
       .createQueryBuilder('estabelecimento')
       .select([
+        'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
         'estabelecimento.instagram',
@@ -78,10 +79,11 @@ export class EstabelecimentoService {
       .getMany();
   }
 
-  async findOne(cnpj: string) {
-    return await this.estabelecimentoRepository
+  async findByCnpj(cnpj: string) {
+    return this.estabelecimentoRepository
       .createQueryBuilder('estabelecimento')
       .select([
+        'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
         'estabelecimento.instagram',
@@ -98,11 +100,29 @@ export class EstabelecimentoService {
       .getOneOrFail();
   }
 
-  async update(
-    cnpj: string,
-    updateEstabelecimentoDto: UpdateEstabelecimentoDto,
-  ) {
-    const estabelecimentoEntity = await this.findOne(cnpj);
+  async findOne(id: string) {
+    return await this.estabelecimentoRepository
+      .createQueryBuilder('estabelecimento')
+      .select([
+        'estabelecimento.id',
+        'estabelecimento.nome',
+        'estabelecimento.cnpj',
+        'estabelecimento.instagram',
+        'estabelecimento.whatsapp',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
+        'estabelecimento.senha',
+        'endereco',
+        'coordenadas',
+      ])
+      .leftJoin('estabelecimento.endereco', 'endereco')
+      .leftJoin('estabelecimento.coordenadas', 'coordenadas')
+      .where('estabelecimento.id = :id', { id })
+      .getOneOrFail();
+  }
+
+  async update(id: string, updateEstabelecimentoDto: UpdateEstabelecimentoDto) {
+    const estabelecimentoEntity = await this.findOne(id);
     const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
 
     if (endereco) {
@@ -124,21 +144,21 @@ export class EstabelecimentoService {
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
     await this.estabelecimentoRepository.update(
-      { cnpj },
+      { id: estabelecimentoEntity.id },
       estabelecimentoEntity,
     );
 
     return estabelecimentoEntity;
   }
 
-  async delete(cnpj: string): Promise<Object> {
+  async delete(id: string) {
     try {
-      const estabelecimentoEntity = await this.findOne(cnpj);
+      const estabelecimentoEntity = await this.findOne(id);
       await this.estabelecimentoRepository.remove(estabelecimentoEntity);
       return { message: 'Estabelecimento deletado com sucesso' };
     } catch (error) {
       return {
-        erro: 'Não foi possível deletar o estabelecimento' + error.message,
+        erro: 'Não foi possível deletar o estabelecimento: ' + error.message,
       };
     }
   }
