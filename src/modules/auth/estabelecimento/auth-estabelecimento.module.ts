@@ -15,7 +15,6 @@ import { PasswordHasherService } from 'src/utilities/password-hasher';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3600s' },
     }),
   ],
   controllers: [AuthEstabelecimentoController],
