@@ -96,7 +96,7 @@ export class EstabelecimentoService {
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
-      .where('estabelecimento.cnpj = :id', { id })
+      .where('estabelecimento.id = :id', { id })
       .getOneOrFail();
   }
 
@@ -130,14 +130,14 @@ export class EstabelecimentoService {
     return estabelecimentoEntity;
   }
 
-  async delete(id: string): Promise<Object> {
+  async delete(id: string) {
     try {
       const estabelecimentoEntity = await this.findOne(id);
       await this.estabelecimentoRepository.remove(estabelecimentoEntity);
       return { message: 'Estabelecimento deletado com sucesso' };
     } catch (error) {
       return {
-        erro: 'Não foi possível deletar o estabelecimento' + error.message,
+        erro: 'Não foi possível deletar o estabelecimento: ' + error.message,
       };
     }
   }
