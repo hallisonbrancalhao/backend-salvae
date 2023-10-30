@@ -13,7 +13,9 @@ import {
 import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { EnderecoEstabelecimento } from './endereco-estabelecimento.entity';
 import { Coordenadas } from './coordenadas.entity';
-import { EstabelecimentoModalidade } from './estabelecimento-modalidade.entity';
+import { Promocao } from './promocao.entity';
+import { EstabelecimentoCategoriaEstabelecimento } from './estabelecimento-categoria-est.entity';
+import { Avaliacao } from './avaliacao.entity';
 
 @Entity('Estabelecimento')
 export class Estabelecimento {
@@ -27,18 +29,28 @@ export class Estabelecimento {
   @JoinColumn()
   endereco: EnderecoEstabelecimento;
 
-  @OneToMany(
-    () => EstabelecimentoModalidade,
-    (modalidade) => modalidade.estabelecimento,
-    {
-      cascade: true,
-    },
-  )
-  modalidade: EstabelecimentoModalidade[];
-
   @OneToOne(() => Coordenadas, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   coordenadas: Coordenadas;
+
+  @OneToMany(() => Promocao, (promocao) => promocao.estabelecimento, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
+  promocao: Promocao[];
+
+  @OneToMany(
+    () => EstabelecimentoCategoriaEstabelecimento,
+    (estabelecimentoCategoria) => estabelecimentoCategoria.estabelecimento,
+  )
+  estabelecimentoCategoria: EstabelecimentoCategoriaEstabelecimento[];
+
+  @OneToMany(() => Avaliacao, (avaliacao) => avaliacao.estabelecimento, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  avaliacao: Avaliacao[];
 
   @Column()
   @IsString({ message: 'O cnpj deve ser uma string' })
@@ -62,21 +74,19 @@ export class Estabelecimento {
   whatsapp: string;
 
   @Column({ type: 'varchar' })
-  @IsString({ message: 'O instagram deve conter apenas números' })
+  @IsString({ message: 'O instagram deve ser uma string válida' })
   @IsNotEmpty()
   instagram: string;
 
-  //TODO validar tamanho
-  @Column({ type: 'text' })
-  @IsString({ message: 'A foto deve ser convertida Base64' })
+  @Column({ type: 'image' })
+  @IsString({ message: 'A foto deve ser do tipo Image' })
   @IsNotEmpty()
-  fotoPerfil: string;
+  fotoPerfil: File;
 
-  //TODO validar tamanho
-  @Column({ type: 'text' })
-  @IsString({ message: 'A foto deve ser convertida Base64' })
+  @Column({ type: 'image' })
+  @IsString({ message: 'A foto deve ser do tipo Image' })
   @IsNotEmpty()
-  fotoCapa: string;
+  fotoCapa: File;
 
   @Column({ type: 'boolean', default: true })
   status: boolean;

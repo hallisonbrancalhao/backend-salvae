@@ -6,8 +6,9 @@ import {
   Column,
   OneToMany,
 } from 'typeorm';
-import { EstabelecimentoModalidade } from './estabelecimento-modalidade.entity';
-import { PromocaoValidade } from './promocao-validade.entity';
+import { Estabelecimento } from './estabelecimento.entity';
+import { PromocaoCategoriaPromocao } from './promocao-categoria-promo.entity';
+import { PromocaoDia } from './promocao-dia.entity';
 
 @Entity('Promocao')
 export class Promocao {
@@ -15,18 +16,21 @@ export class Promocao {
   id: number;
 
   @ManyToOne(
-    () => EstabelecimentoModalidade,
-    (estabelecimentoModalidade) => estabelecimentoModalidade.promocao,
+    () => Estabelecimento,
+    (Estabelecimento) => Estabelecimento.promocao,
   )
-  @JoinColumn({ name: 'idEstabelecimentoModalidade' })
-  estabelecimentoModalidade: EstabelecimentoModalidade;
+  @JoinColumn({ name: 'idEstabelecimento' })
+  estabelecimento: Estabelecimento;
+
+  @OneToMany(
+    () => PromocaoCategoriaPromocao,
+    (promocaoCategoria) => promocaoCategoria.promocao,
+  )
+  promocaoCategoria: PromocaoCategoriaPromocao[];
+
+  @OneToMany(() => PromocaoDia, (promocaoDia) => promocaoDia.promocao)
+  promocaoDia: PromocaoDia[];
 
   @Column({ type: 'varchar' })
   descricao: string;
-
-  @OneToMany(
-    () => PromocaoValidade,
-    (promocaoValidade) => promocaoValidade.promocao,
-  )
-  promocaoValidades: PromocaoValidade[];
 }
