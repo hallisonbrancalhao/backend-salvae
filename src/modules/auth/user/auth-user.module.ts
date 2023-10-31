@@ -12,7 +12,6 @@ import { usersProviders } from 'src/core/providers/user.providers';
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '3600s' },
     }),
   ],
   controllers: [AuthUserController],
