@@ -78,15 +78,15 @@ export class Estabelecimento {
   @IsNotEmpty()
   instagram: string;
 
-  @Column({ type: 'image' })
-  @IsString({ message: 'A foto deve ser do tipo Image' })
+  @Column({ type: 'longtext' })
+  @IsString({ message: 'A foto deve ser do tipo Base64' })
   @IsNotEmpty()
-  fotoPerfil: File;
+  fotoPerfil: string;
 
-  @Column({ type: 'image' })
-  @IsString({ message: 'A foto deve ser do tipo Image' })
+  @Column({ type: 'longtext' })
+  @IsString({ message: 'A foto deve ser do tipo Base64' })
   @IsNotEmpty()
-  fotoCapa: File;
+  fotoCapa: string;
 
   @Column({ type: 'boolean', default: true })
   status: boolean;

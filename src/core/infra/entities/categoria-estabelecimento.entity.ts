@@ -16,6 +16,6 @@ export class CategoriaEstabelecimento {
   @Column()
   nome: string;
 
-  @Column({ type: 'image' })
-  icone: File;
+  @Column({ type: 'longtext' })
+  icone: string;
 }
