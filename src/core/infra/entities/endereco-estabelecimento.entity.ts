@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import {
   IsString,
   IsNotEmpty,
@@ -13,11 +19,7 @@ export class EnderecoEstabelecimento {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(
-    () => Estabelecimento,
-    (estabelecimento) => estabelecimento.endereco,
-    { onDelete: 'CASCADE' },
-  )
+  @OneToOne(() => Estabelecimento)
   estabelecimento: Estabelecimento;
 
   @Column()

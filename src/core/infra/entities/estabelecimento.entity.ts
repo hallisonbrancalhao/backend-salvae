@@ -23,10 +23,11 @@ export class Estabelecimento {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => EnderecoEstabelecimento, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(
+    () => EnderecoEstabelecimento,
+    (endereco) => endereco.estabelecimento,
+    { cascade: true },
+  )
   @JoinColumn()
   endereco: EnderecoEstabelecimento;
 
@@ -36,7 +37,6 @@ export class Estabelecimento {
 
   @OneToMany(() => Promocao, (promocao) => promocao.estabelecimento, {
     cascade: true,
-    onDelete: 'CASCADE',
   })
   promocao: Promocao[];
 
@@ -49,8 +49,6 @@ export class Estabelecimento {
 
   @OneToMany(() => Avaliacao, (avaliacao) => avaliacao.estabelecimento, {
     cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
   })
   avaliacao: Avaliacao[];
 

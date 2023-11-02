@@ -18,15 +18,14 @@ export class Promocao {
   @ManyToOne(
     () => Estabelecimento,
     (Estabelecimento) => Estabelecimento.promocao,
-    { onDelete: 'CASCADE' },
   )
-  @JoinColumn({ name: 'idEstabelecimento' })
+  @JoinColumn()
   estabelecimento: Estabelecimento;
 
   @OneToMany(
     () => PromocaoCategoriaPromocao,
     (promocaoCategoria) => promocaoCategoria.promocao,
-    { cascade: true, onDelete: 'CASCADE' },
+    { cascade: true },
   )
   promocaoCategoria: PromocaoCategoriaPromocao[];
 

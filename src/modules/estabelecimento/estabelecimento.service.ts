@@ -165,9 +165,17 @@ export class EstabelecimentoService {
 
   async delete(id: string) {
     try {
-      const estabelecimentoEntity = await this.findOne(id);
-      await this.estabelecimentoRepository.remove(estabelecimentoEntity);
-      return { message: 'Estabelecimento deletado com sucesso' };
+      const estabelecimento = await this.findOne(id);
+      await this.connection.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.delete(Estabelecimento, id);
+        await transactionalEntityManager.delete(EnderecoEstabelecimento, {
+          id: estabelecimento.endereco.id,
+        });
+        await transactionalEntityManager.delete(Coordenadas, {
+          id: estabelecimento.coordenadas.id,
+        });
+      });
+      return { message: 'Estabelecimento excluído com sucesso.' };
     } catch (error) {
       return {
         erro: 'Não foi possível deletar o estabelecimento: ' + error.message,

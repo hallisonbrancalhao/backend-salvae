@@ -1,20 +1,29 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
+  Param,
+  Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiHeaders,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { PromocaoService } from './promocao.service';
-import { CreatePromocaoDto } from 'src/core/infra';
+import {
+  AuthEstabelecimentoGuard,
+  CreatePromocaoDto,
+  UpdatePromocaoDto,
+} from 'src/core/infra';
 
 @ApiTags('Promocao')
 @Controller('promocao')
@@ -66,53 +75,52 @@ export class PromocaoController {
     }
   }
 
-  // @ApiOperation({ summary: 'Encontrar estabelecimento por ' })
-  // @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
-  // @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })
-  // @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
-  // @ApiParam({
-  //   name: 'Cnpj',
-  //   type: 'string',
-  //   description: 'Cnpj do estabelecimento',
-  // })
-  // @UseGuards(AuthEstabelecimentoGuard)
-  // @Get(':cnpj')
-  // async findOne(@Param('cnpj') cnpj: string) {
-  //   try {
-  //     return await this.estabelecimento.findOne(cnpj);
-  //   } catch (error) {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.BAD_REQUEST,
-  //         error: error.message,
-  //       },
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  // }
+  @ApiOperation({ summary: 'Encontrar promoção por Id' })
+  @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })
+  @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'Id da promocao',
+  })
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    try {
+      return await this.promocao.findOne(id);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 
-  // @ApiOperation({ summary: 'Alterar estabelecimento por ' })
+  //TODO: Finalizar implementação do update
+  // @ApiOperation({ summary: 'Alterar promocao por ID' })
   // @ApiHeaders([
   //   { name: 'Authorization', required: true, description: 'Bearer <token>' },
   // ])
   // @ApiResponse({
   //   status: 200,
-  //   description: 'Estabelecimento alterado com sucesso.',
+  //   description: 'Promoçao alterada com sucesso.',
   // })
-  // @ApiBody({ type: UpdateEstabelecimentoDto })
+  // @ApiBody({ type: UpdatePromocaoDto })
   // @ApiParam({
-  //   name: 'Cnpj',
+  //   name: 'ID',
   //   type: 'string',
-  //   description: 'Cnpj do estabelecimento',
+  //   description: 'Id do estabelecimento',
   // })
   // @UseGuards(AuthEstabelecimentoGuard)
-  // @Patch(':cnpj')
+  // @Patch(':id')
   // async update(
-  //   @Param('cnpj') cnpj: string,
-  //   @Body() updateEstabelecimentoDto: UpdateEstabelecimentoDto,
+  //   @Param('id') id: string,
+  //   @Body() updatePromocaoDto: UpdatePromocaoDto,
   // ) {
   //   try {
-  //     return await this.estabelecimento.update(cnpj, updateEstabelecimentoDto);
+  //     return await this.promocao.update(id, updatePromocaoDto);
   //   } catch (error) {
   //     throw new HttpException(
   //       {
@@ -124,30 +132,30 @@ export class PromocaoController {
   //   }
   // }
 
-  // @ApiOperation({ summary: 'Excluir estabelecimento por Cnpj' })
-  // @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Estabelecimento excluído com sucesso.',
-  // })
-  // @ApiParam({
-  //   name: 'cnpj',
-  //   type: 'string',
-  //   description: 'cnpj do estabelecimento ',
-  // })
-  // @UseGuards(AuthEstabelecimentoGuard)
-  // @Delete(':cnpj')
-  // async delete(@Param('cnpj') cnpj: string) {
-  //   try {
-  //     return await this.estabelecimento.delete(cnpj);
-  //   } catch (error) {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.BAD_GATEWAY,
-  //         error: 'Não foi possível excluir o estabelecimento.' + error.message,
-  //       },
-  //       HttpStatus.BAD_GATEWAY,
-  //     );
-  //   }
-  // }
+  @ApiOperation({ summary: 'Excluir promocao por id' })
+  @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
+  @ApiResponse({
+    status: 200,
+    description: 'Promocao excluído com sucesso.',
+  })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'id do estabelecimento ',
+  })
+  @UseGuards(AuthEstabelecimentoGuard)
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    try {
+      return await this.promocao.delete(id);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_GATEWAY,
+          error: 'Não foi possível excluir a promocao. ' + error.message,
+        },
+        HttpStatus.BAD_GATEWAY,
+      );
+    }
+  }
 }
