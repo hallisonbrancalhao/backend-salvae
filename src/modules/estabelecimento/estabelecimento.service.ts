@@ -7,6 +7,7 @@ import {
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
   Coordenadas,
+  CategoriaEstabelecimento,
 } from 'src/core/infra';
 import { GeocodingService } from 'src/utilities';
 import { PasswordHasherService } from 'src/utilities/password-hasher';
@@ -20,43 +21,54 @@ export class EstabelecimentoService {
     private readonly enderecoRepository: Repository<EnderecoEstabelecimento>,
     @Inject('COORDENADAS')
     private readonly coordenadasRepository: Repository<Coordenadas>,
+    @Inject('CATEGORIA_ESTABELECIMENTO_REPOSITORY')
+    private readonly categoriaRepository: Repository<CategoriaEstabelecimento>,
     @Inject('DATABASE_CONNECTION')
-    private readonly myDataSource: DataSource,
+    private readonly connection: DataSource,
     private readonly geocodingService: GeocodingService,
     private readonly hasher: PasswordHasherService,
   ) {}
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto) {
-    const { endereco, ...dataEstabelecimento } = createEstabelecimentoDto;
+    return await this.connection.transaction(
+      async (transactionalEntityManager) => {
+        const { endereco, estabelecimentoCategoria, ...dataEstabelecimento } =
+          createEstabelecimentoDto;
 
-    const { latitude, longitude } = await this.geocodingService.getCoordinates(
-      endereco.cep,
-      endereco.numero,
+        const { latitude, longitude } =
+          await this.geocodingService.getCoordinates(
+            endereco.cep,
+            endereco.numero,
+          );
+
+        const hashedPass = await this.hasher.hashPassword(
+          createEstabelecimentoDto.senha,
+        );
+        dataEstabelecimento.senha = hashedPass;
+
+        const coordenadasEntity = this.coordenadasRepository.create({
+          latitude,
+          longitude,
+        });
+
+        const enderecoEntity = this.enderecoRepository.create(endereco);
+
+        const categoriaEntity = await this.categoriaRepository.findOne({
+          where: { id: estabelecimentoCategoria.id },
+        });
+
+        const estabelecimentoEntity = this.estabelecimentoRepository.create({
+          ...dataEstabelecimento,
+          estabelecimentoCategoria: categoriaEntity,
+          coordenadas: coordenadasEntity,
+          endereco: enderecoEntity,
+        });
+
+        await transactionalEntityManager.save(estabelecimentoEntity);
+
+        return estabelecimentoEntity;
+      },
     );
-
-    const hashedPass = await this.hasher.hashPassword(
-      createEstabelecimentoDto.senha,
-    );
-    dataEstabelecimento.senha = hashedPass;
-
-    const coordenadasEntity = this.coordenadasRepository.create({
-      latitude,
-      longitude,
-    });
-
-    const enderecoEntity = this.enderecoRepository.create(endereco);
-
-    const estabelecimentoEntity = this.estabelecimentoRepository.create({
-      ...dataEstabelecimento,
-      coordenadas: coordenadasEntity,
-      endereco: enderecoEntity,
-    });
-
-    await this.myDataSource.transaction(async (transactionalEntityManager) => {
-      await transactionalEntityManager.save(estabelecimentoEntity);
-    });
-
-    return estabelecimentoEntity;
   }
 
   async findAll() {

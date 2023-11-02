@@ -16,6 +16,7 @@ export class EnderecoEstabelecimento {
   @OneToOne(
     () => Estabelecimento,
     (estabelecimento) => estabelecimento.endereco,
+    { onDelete: 'CASCADE' },
   )
   estabelecimento: Estabelecimento;
 

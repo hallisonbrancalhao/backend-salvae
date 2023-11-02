@@ -9,13 +9,14 @@ import {
   JoinColumn,
   Unique,
   OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { EnderecoEstabelecimento } from './endereco-estabelecimento.entity';
 import { Coordenadas } from './coordenadas.entity';
 import { Promocao } from './promocao.entity';
-import { EstabelecimentoCategoriaEstabelecimento } from './estabelecimento-categoria-est.entity';
 import { Avaliacao } from './avaliacao.entity';
+import { CategoriaEstabelecimento } from './categoria-estabelecimento.entity';
 
 @Entity('Estabelecimento')
 export class Estabelecimento {
@@ -39,11 +40,12 @@ export class Estabelecimento {
   })
   promocao: Promocao[];
 
-  @OneToMany(
-    () => EstabelecimentoCategoriaEstabelecimento,
-    (estabelecimentoCategoria) => estabelecimentoCategoria.estabelecimento,
+  @ManyToOne(
+    () => CategoriaEstabelecimento,
+    (categoriaEstabelecimento) => categoriaEstabelecimento.estabelecimento,
   )
-  estabelecimentoCategoria: EstabelecimentoCategoriaEstabelecimento[];
+  @JoinColumn()
+  estabelecimentoCategoria: CategoriaEstabelecimento;
 
   @OneToMany(() => Avaliacao, (avaliacao) => avaliacao.estabelecimento, {
     cascade: true,

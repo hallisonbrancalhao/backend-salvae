@@ -18,6 +18,7 @@ export class Coordenadas {
   @OneToOne(
     () => Estabelecimento,
     (estabelecimento) => estabelecimento.coordenadas,
+    { onDelete: 'CASCADE' },
   )
   estabelecimento: Estabelecimento;
 }

@@ -7,7 +7,9 @@ export class PromocaoCategoriaPromocao {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Promocao, (promocao) => promocao.promocaoCategoria)
+  @ManyToOne(() => Promocao, (promocao) => promocao.promocaoCategoria, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'idPromocao' })
   promocao: Promocao;
 
