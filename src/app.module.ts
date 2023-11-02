@@ -6,6 +6,7 @@ import { AuthUserModule } from './modules/auth/user/auth-user.module';
 import { DatabaseModule } from './database/database.module';
 import { EstabelecimentoModule } from './modules/estabelecimento/estabelecimento.module';
 import { AuthEstabelecimentoModule } from './modules/auth/estabelecimento/auth-estabelecimento.module';
+import { PromocaoModule } from './modules/promocao/promocao.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthEstabelecimentoModule } from './modules/auth/estabelecimento/auth-e
     EstabelecimentoModule,
     AuthUserModule,
     AuthEstabelecimentoModule,
+    PromocaoModule,
   ],
 })
 export class AppModule {}
