@@ -88,7 +88,8 @@ export class UsersService {
 
   async delete(email: string) {
     try {
-      await this.userRepository.delete({ email });
+      const userEntity = await this.findOne(email);
+      await this.userRepository.remove(userEntity);
       return { message: 'Usuário deletado com sucesso' };
     } catch (error) {
       return {

@@ -8,26 +8,49 @@ import {
   OneToOne,
   JoinColumn,
   Unique,
+  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { EnderecoEstabelecimento } from './endereco-estabelecimento.entity';
 import { Coordenadas } from './coordenadas.entity';
+import { Promocao } from './promocao.entity';
+import { Avaliacao } from './avaliacao.entity';
+import { CategoriaEstabelecimento } from './categoria-estabelecimento.entity';
 
 @Entity('Estabelecimento')
 export class Estabelecimento {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => EnderecoEstabelecimento, {
-    cascade: true,
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(
+    () => EnderecoEstabelecimento,
+    (endereco) => endereco.estabelecimento,
+    { cascade: true },
+  )
   @JoinColumn()
   endereco: EnderecoEstabelecimento;
 
   @OneToOne(() => Coordenadas, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   coordenadas: Coordenadas;
+
+  @OneToMany(() => Promocao, (promocao) => promocao.estabelecimento, {
+    cascade: true,
+  })
+  promocao: Promocao[];
+
+  @ManyToOne(
+    () => CategoriaEstabelecimento,
+    (categoriaEstabelecimento) => categoriaEstabelecimento.estabelecimento,
+  )
+  @JoinColumn()
+  estabelecimentoCategoria: CategoriaEstabelecimento;
+
+  @OneToMany(() => Avaliacao, (avaliacao) => avaliacao.estabelecimento, {
+    cascade: true,
+  })
+  avaliacao: Avaliacao[];
 
   @Column()
   @IsString({ message: 'O cnpj deve ser uma string' })
@@ -51,19 +74,17 @@ export class Estabelecimento {
   whatsapp: string;
 
   @Column({ type: 'varchar' })
-  @IsString({ message: 'O instagram deve conter apenas números' })
+  @IsString({ message: 'O instagram deve ser uma string válida' })
   @IsNotEmpty()
   instagram: string;
 
-  //TODO validar tamanho
-  @Column({ type: 'text' })
-  @IsString({ message: 'A foto deve ser convertida Base64' })
+  @Column({ type: 'longtext' })
+  @IsString({ message: 'A foto deve ser do tipo Base64' })
   @IsNotEmpty()
   fotoPerfil: string;
 
-  //TODO validar tamanho
-  @Column({ type: 'text' })
-  @IsString({ message: 'A foto deve ser convertida Base64' })
+  @Column({ type: 'longtext' })
+  @IsString({ message: 'A foto deve ser do tipo Base64' })
   @IsNotEmpty()
   fotoCapa: string;
 
