@@ -14,14 +14,14 @@ import { CreatePromocaoDto } from 'src/core/infra';
 export class PromocaoController {
   constructor(private readonly promocao: PromocaoService) {}
 
-  @ApiOperation({ summary: 'Cadastrar promocao' })
+  @ApiOperation({ summary: 'Cadastrar promoção' })
   @ApiResponse({
     status: 201,
-    description: 'Promocao criado com sucesso.',
+    description: 'Promoção criado com sucesso.',
   })
   @ApiBody({
     type: CreatePromocaoDto,
-    description: 'Dados do estabelecimento a ser criado.',
+    description: 'Dados da promoção a ser criada.',
   })
   @Post()
   async create(@Body() createPromocaoDto: CreatePromocaoDto) {
@@ -29,13 +29,13 @@ export class PromocaoController {
       await this.promocao.create(createPromocaoDto);
       return {
         status: 201,
-        description: 'Estabelecimento criado com sucesso.',
+        description: 'Promoção criada com sucesso.',
       };
     } catch (error) {
-      return new HttpException(
+      throw new HttpException(
         {
           status: HttpStatus.FORBIDDEN,
-          error: 'Não foi possível criar o estabelecimento.' + error,
+          error: 'Não foi possível criar a promocao.' + error,
         },
         HttpStatus.FORBIDDEN,
       );

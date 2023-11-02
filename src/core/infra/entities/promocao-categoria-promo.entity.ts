@@ -11,10 +11,7 @@ export class PromocaoCategoriaPromocao {
   @JoinColumn({ name: 'idPromocao' })
   promocao: Promocao;
 
-  @ManyToOne(
-    () => CategoriaPromocao,
-    (categoriaPromocao) => categoriaPromocao.promocaoCategoria,
-  )
+  @ManyToOne(() => CategoriaPromocao)
   @JoinColumn({ name: 'idCategoriaPromocao' })
   categoriaPromocao: CategoriaPromocao;
 }
