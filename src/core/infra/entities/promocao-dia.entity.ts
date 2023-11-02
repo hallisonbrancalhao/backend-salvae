@@ -11,10 +11,7 @@ export class PromocaoDia {
   @JoinColumn({ name: 'idPromocao' })
   promocao: Promocao;
 
-  @ManyToOne(
-    () => DiaFuncionamento,
-    (diaFuncionamento) => diaFuncionamento.diaFuncionamento,
-  )
+  @ManyToOne(() => DiaFuncionamento)
   @JoinColumn({ name: 'idDiaFuncionamento' })
   dia: DiaFuncionamento;
 }

@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { EstabelecimentoCategoriaEstabelecimento } from './estabelecimento-categoria-est.entity';
+import { Estabelecimento } from './estabelecimento.entity';
 
 @Entity('CategoriaEstabelecimento')
 export class CategoriaEstabelecimento {
@@ -7,11 +7,10 @@ export class CategoriaEstabelecimento {
   id: number;
 
   @OneToMany(
-    () => EstabelecimentoCategoriaEstabelecimento,
-    (estabelecientoCategoria) =>
-      estabelecientoCategoria.categoriaEstabelecimento,
+    () => Estabelecimento,
+    (categoria) => categoria.estabelecimentoCategoria,
   )
-  estabelecimentoCategoria: EstabelecimentoCategoriaEstabelecimento[];
+  estabelecimento: Estabelecimento[];
 
   @Column()
   nome: string;

@@ -1,6 +1,12 @@
-import { IsNotEmpty, IsString, IsOptional } from '@nestjs/class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsNumber,
+} from '@nestjs/class-validator';
 import { CreateEnderecoEstabelecimentoDto } from './create-endereco-estabelecimento.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { CategoriaEstabelecimento } from '../entities';
 
 export class CreateEstabelecimentoDto {
   @ApiProperty()
@@ -17,6 +23,11 @@ export class CreateEstabelecimentoDto {
   @IsString({ message: 'A senha deve ser uma string' })
   @IsNotEmpty()
   senha: string;
+
+  @ApiProperty({ type: CategoriaEstabelecimento })
+  @IsNumber()
+  @IsNotEmpty()
+  estabelecimentoCategoria: CategoriaEstabelecimento;
 
   @ApiProperty({ type: CreateEnderecoEstabelecimentoDto, required: false })
   @IsOptional()

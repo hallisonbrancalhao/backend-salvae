@@ -10,5 +10,6 @@ export * from './promocao-dia.dto';
 export * from './update-endereco-estabelecimento';
 export * from './update-endereco.dto';
 export * from './update-estabelecimento.dto';
+export * from './update-promocao.dto';
 export * from './update-user.dto';
 export * from './user-login.dto';

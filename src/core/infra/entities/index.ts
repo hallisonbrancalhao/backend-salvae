@@ -5,7 +5,6 @@ export * from './coordenadas.entity';
 export * from './dia-funcionamento.entity';
 export * from './endereco-estabelecimento.entity';
 export * from './endereco.entity';
-export * from './estabelecimento-categoria-est.entity';
 export * from './estabelecimento.entity';
 export * from './promocao-categoria-promo.entity';
 export * from './promocao-dia.entity';

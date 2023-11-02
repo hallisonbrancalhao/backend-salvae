@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Estabelecimento } from '../infra/entities/estabelecimento.entity';
 import { EnderecoEstabelecimento } from '../infra/entities/endereco-estabelecimento.entity';
-import { Coordenadas } from '../infra';
+import { CategoriaEstabelecimento, Coordenadas } from '../infra';
 
 export const estabelecimentoProviders = [
   {
@@ -20,6 +20,12 @@ export const estabelecimentoProviders = [
     provide: 'COORDENADAS',
     useFactory: (dataSource: DataSource) =>
       dataSource.getRepository(Coordenadas),
+    inject: ['DATABASE_CONNECTION'],
+  },
+  {
+    provide: 'CATEGORIA_ESTABELECIMENTO_REPOSITORY',
+    useFactory: (dataSource: DataSource) =>
+      dataSource.getRepository(CategoriaEstabelecimento),
     inject: ['DATABASE_CONNECTION'],
   },
 ];
