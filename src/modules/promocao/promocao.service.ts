@@ -8,13 +8,15 @@ import {
   PromocaoCategoriaPromocao,
   PromocaoDia,
 } from 'src/core/infra';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 
 @Injectable()
 export class PromocaoService {
   constructor(
     @Inject('ESTABELECIMENTO_REPOSITORY')
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
+    @Inject('PROMOCAO')
+    private readonly promocaoRepository: Repository<Promocao>,
     private readonly connection: DataSource,
   ) {}
 
@@ -26,6 +28,32 @@ export class PromocaoService {
       promocaoDto,
       estabelecimento,
     );
+  }
+
+  async findAll() {
+    const promocoes = await this.promocaoRepository
+      .createQueryBuilder('pr')
+      .innerJoinAndSelect('pr.promocaoCategoria', 'pcp')
+      .innerJoinAndSelect('pr.promocaoDia', 'prd')
+      .innerJoinAndSelect('pcp.categoriaPromocao', 'cp')
+      .innerJoinAndSelect('prd.dia', 'df')
+      .innerJoinAndSelect('pr.estabelecimento', 'es')
+      .innerJoinAndSelect('es.endereco', 'en')
+      .leftJoinAndSelect('es.estabelecimentoCategoria', 'ec')
+      .getMany();
+
+    return promocoes.map((promocao) => ({
+      id: promocao.id,
+      descricao: promocao.descricao,
+      promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
+      promocaoCategoria: promocao.promocaoCategoria.map(
+        (pc) => pc.categoriaPromocao.nome,
+      ),
+      estabelecimento: {
+        ...promocao.estabelecimento,
+        endereco: promocao.estabelecimento.endereco,
+      },
+    }));
   }
 
   private async findEstablishmentById(id: number) {
