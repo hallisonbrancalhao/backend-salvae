@@ -9,8 +9,7 @@ import {
   PromocaoDia,
   UpdatePromocaoDto,
 } from 'src/core/infra';
-import { DataSource, In, Repository } from 'typeorm';
-
+import { DataSource, In, Repository, Transaction } from 'typeorm';
 @Injectable()
 export class PromocaoService {
   constructor(
@@ -36,12 +35,12 @@ export class PromocaoService {
   async findAll() {
     const promocoes = await this.promocaoRepository
       .createQueryBuilder('pr')
-      .innerJoinAndSelect('pr.promocaoCategoria', 'pcp')
-      .innerJoinAndSelect('pr.promocaoDia', 'prd')
+      .leftJoinAndSelect('pr.promocaoCategoria', 'pcp')
+      .leftJoinAndSelect('pr.promocaoDia', 'prd')
       .innerJoinAndSelect('pcp.categoriaPromocao', 'cp')
-      .innerJoinAndSelect('prd.dia', 'df')
-      .innerJoinAndSelect('pr.estabelecimento', 'es')
-      .innerJoinAndSelect('es.endereco', 'en')
+      .leftJoinAndSelect('prd.dia', 'df')
+      .leftJoinAndSelect('pr.estabelecimento', 'es')
+      .leftJoinAndSelect('es.endereco', 'en')
       .leftJoinAndSelect('es.estabelecimentoCategoria', 'ec')
       .getMany();
 
@@ -62,12 +61,12 @@ export class PromocaoService {
   async findOne(id: string) {
     const promocao = await this.promocaoRepository
       .createQueryBuilder('pr')
-      .innerJoinAndSelect('pr.promocaoCategoria', 'pcp')
-      .innerJoinAndSelect('pr.promocaoDia', 'prd')
-      .innerJoinAndSelect('pcp.categoriaPromocao', 'cp')
-      .innerJoinAndSelect('prd.dia', 'df')
-      .innerJoinAndSelect('pr.estabelecimento', 'es')
-      .innerJoinAndSelect('es.endereco', 'en')
+      .leftJoinAndSelect('pr.promocaoCategoria', 'pcp')
+      .leftJoinAndSelect('pr.promocaoDia', 'prd')
+      .leftJoinAndSelect('pcp.categoriaPromocao', 'cp')
+      .leftJoinAndSelect('prd.dia', 'df')
+      .leftJoinAndSelect('pr.estabelecimento', 'es')
+      .leftJoinAndSelect('es.endereco', 'en')
       .leftJoinAndSelect('es.estabelecimentoCategoria', 'ec')
       .andWhere('pr.id = :id', { id })
       .getOne();
@@ -86,25 +85,68 @@ export class PromocaoService {
     };
   }
 
-  //TODO: Finalizar implementação do update
-  // async update(id: string, promocaoDto: UpdatePromocaoDto) {
-  //   const promocaoEntity = await this.findOne(id);
+  async update(id: number, updatePromocaoDto: UpdatePromocaoDto) {
+    const promocaoEntity = await this.promocaoRepository.findOne({
+      where: { id },
+      relations: ['promocaoCategoria', 'promocaoDia', 'estabelecimento'],
+    });
 
-  //   if (!promocaoEntity) {
-  //     throw new NotFoundException(`Promoção não encontrada com o id: ${id}`);
-  //   }
+    if (!promocaoEntity) {
+      throw new NotFoundException(`Promoção não encontrada com o id: ${id}`);
+    }
 
-  //   const { promocaoCategoria, promocaoDia } = promocaoEntity;
-  //   console.log(
-  //     'PromocaoService : update : promocaoCategoria:',
-  //     promocaoCategoria,
-  //   );
+    const { promocaoDia, promocaoCategoria, ...promocaoData } =
+      updatePromocaoDto;
 
-  //   const oldCategorias = await this.promocaoCategoriaPromocao.find({
-  //     where: { promocao: In([promocaoCategoria]) },
-  //   });
-  //   console.log('PromocaoService : update : oldCategorias:', oldCategorias);
-  // }
+    Object.assign(promocaoEntity, promocaoData);
+
+    if (promocaoDia) {
+      await this.connection.transaction(async (transactionalEntityManager) => {
+        await transactionalEntityManager.delete(PromocaoDia, {
+          promocao: promocaoEntity.id,
+        });
+
+        promocaoEntity.promocaoDia = await Promise.all(
+          promocaoDia.map(async (pd) => {
+            const dia = await transactionalEntityManager.findOne(
+              DiaFuncionamento,
+              { where: { id: pd.idDiaFuncionamento } },
+            );
+            return transactionalEntityManager.create(PromocaoDia, {
+              ...pd,
+              dia,
+            });
+          }),
+        );
+      });
+    }
+
+    if (promocaoCategoria) {
+      await this.connection.transaction(async (transactionalEntityManager) => {
+        promocaoEntity.promocaoCategoria = await Promise.all(
+          promocaoCategoria.map(async (pc) => {
+            const categoriaPromocao = await transactionalEntityManager.findOne(
+              CategoriaPromocao,
+              {
+                where: { id: pc.idCategoriaPromocao },
+              },
+            );
+            return transactionalEntityManager.create(
+              PromocaoCategoriaPromocao,
+              {
+                ...pc,
+                categoriaPromocao,
+              },
+            );
+          }),
+        );
+      });
+    }
+
+    await this.promocaoRepository.save(promocaoEntity);
+
+    return promocaoEntity;
+  }
 
   async delete(id: string) {
     const promocao = await this.findOne(id);
