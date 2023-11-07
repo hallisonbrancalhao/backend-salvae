@@ -24,10 +24,10 @@ export class CreateEstabelecimentoDto {
   @IsNotEmpty()
   senha: string;
 
-  @ApiProperty({ type: CategoriaEstabelecimento })
+  @ApiProperty()
   @IsNumber()
   @IsNotEmpty()
-  estabelecimentoCategoria: CategoriaEstabelecimento;
+  estabelecimentoCategoria: number;
 
   @ApiProperty({ type: CreateEnderecoEstabelecimentoDto, required: false })
   @IsOptional()

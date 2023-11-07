@@ -18,6 +18,7 @@ export class Promocao {
   @ManyToOne(
     () => Estabelecimento,
     (Estabelecimento) => Estabelecimento.promocao,
+    { onDelete: 'CASCADE' },
   )
   @JoinColumn()
   estabelecimento: Estabelecimento;

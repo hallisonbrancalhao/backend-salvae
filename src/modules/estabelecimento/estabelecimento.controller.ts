@@ -60,8 +60,6 @@ export class EstabelecimentoController {
 
   @ApiOperation({ summary: 'Listar todos estabelecimentos' })
   @ApiResponse({ status: 200, description: 'Lista de estabelecimentos' })
-  @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
-  @UseGuards(AuthEstabelecimentoGuard)
   @Get()
   async findAll() {
     try {

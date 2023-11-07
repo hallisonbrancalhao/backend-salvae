@@ -9,7 +9,7 @@ import {
   PromocaoDia,
   UpdatePromocaoDto,
 } from 'src/core/infra';
-import { DataSource, In, Repository, Transaction } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 @Injectable()
 export class PromocaoService {
   constructor(
@@ -33,24 +33,23 @@ export class PromocaoService {
   }
 
   async findAll() {
-    const promocoes = await this.promocaoRepository
-      .createQueryBuilder('pr')
-      .leftJoinAndSelect('pr.promocaoCategoria', 'pcp')
-      .leftJoinAndSelect('pr.promocaoDia', 'prd')
-      .innerJoinAndSelect('pcp.categoriaPromocao', 'cp')
-      .leftJoinAndSelect('prd.dia', 'df')
-      .leftJoinAndSelect('pr.estabelecimento', 'es')
-      .leftJoinAndSelect('es.endereco', 'en')
-      .leftJoinAndSelect('es.estabelecimentoCategoria', 'ec')
-      .getMany();
+    const promocoes = await this.promocaoRepository.find({
+      relations: [
+        'promocaoCategoria',
+        'promocaoCategoria.categoriaPromocao',
+        'promocaoDia.dia',
+        'estabelecimento',
+        'estabelecimento.endereco',
+        'estabelecimento.estabelecimentoCategoria',
+      ],
+    });
 
     return promocoes.map((promocao) => ({
-      id: promocao.id,
-      descricao: promocao.descricao,
-      promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
+      ...promocao,
       promocaoCategoria: promocao.promocaoCategoria.map(
-        (pc) => pc.categoriaPromocao.nome,
+        (pc) => pc.categoriaPromocao,
       ),
+      promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
       estabelecimento: {
         ...promocao.estabelecimento,
         endereco: promocao.estabelecimento.endereco,
@@ -76,7 +75,7 @@ export class PromocaoService {
       descricao: promocao.descricao,
       promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
       promocaoCategoria: promocao.promocaoCategoria.map(
-        (pc) => pc.categoriaPromocao.nome,
+        (pc) => pc.categoriaPromocao,
       ),
       estabelecimento: {
         ...promocao.estabelecimento,
@@ -198,6 +197,10 @@ export class PromocaoService {
           PromocaoCategoriaPromocao,
           await Promise.all(
             promocaoDto.promocaoCategoria.map(async (pc) => {
+              console.log(
+                'PromocaoService : promocaoDto.promocaoCategoria.map : promocaoCategoria:',
+                pc,
+              );
               const categoriaPromocao =
                 await transactionalEntityManager.findOne(CategoriaPromocao, {
                   where: { id: pc.idCategoriaPromocao },
