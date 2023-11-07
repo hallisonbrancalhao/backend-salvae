@@ -34,6 +34,10 @@ export class EstabelecimentoService {
       async (transactionalEntityManager) => {
         const { endereco, estabelecimentoCategoria, ...dataEstabelecimento } =
           createEstabelecimentoDto;
+        console.log(
+          'EstabelecimentoService : estabelecimentoCategoria:',
+          estabelecimentoCategoria,
+        );
 
         const { latitude, longitude } =
           await this.geocodingService.getCoordinates(
@@ -54,7 +58,7 @@ export class EstabelecimentoService {
         const enderecoEntity = this.enderecoRepository.create(endereco);
 
         const categoriaEntity = await this.categoriaRepository.findOne({
-          where: { id: estabelecimentoCategoria.id },
+          where: { id: estabelecimentoCategoria },
         });
 
         const estabelecimentoEntity = this.estabelecimentoRepository.create({
@@ -64,6 +68,10 @@ export class EstabelecimentoService {
           endereco: enderecoEntity,
         });
 
+        console.log(
+          'EstabelecimentoService : estabelecimentoEntity:',
+          estabelecimentoEntity,
+        );
         await transactionalEntityManager.save(estabelecimentoEntity);
 
         return estabelecimentoEntity;
@@ -82,11 +90,13 @@ export class EstabelecimentoService {
         'estabelecimento.whatsapp',
         'estabelecimento.fotoCapa',
         'estabelecimento.fotoPerfil',
+        'categoria',
         'endereco',
         'coordenadas',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
+      .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .orderBy('estabelecimento.nome')
       .getMany();
   }
@@ -102,12 +112,13 @@ export class EstabelecimentoService {
         'estabelecimento.whatsapp',
         'estabelecimento.fotoCapa',
         'estabelecimento.fotoPerfil',
-        'estabelecimento.senha',
+        'categoria',
         'endereco',
         'coordenadas',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
+      .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .where('estabelecimento.cnpj = :cnpj', { cnpj })
       .getOneOrFail();
   }
