@@ -47,7 +47,7 @@ export class PromocaoService {
     return promocoes.map((promocao) => ({
       ...promocao,
       promocaoCategoria: promocao.promocaoCategoria.map(
-        (pc) => pc.categoriaPromocao,
+        (pc) => pc.categoriaPromocao?.nome ?? 'Não informado',
       ),
       promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
       estabelecimento: {
@@ -58,25 +58,27 @@ export class PromocaoService {
   }
 
   async findOne(id: string) {
-    const promocao = await this.promocaoRepository
-      .createQueryBuilder('pr')
-      .leftJoinAndSelect('pr.promocaoCategoria', 'pcp')
-      .leftJoinAndSelect('pr.promocaoDia', 'prd')
-      .leftJoinAndSelect('pcp.categoriaPromocao', 'cp')
-      .leftJoinAndSelect('prd.dia', 'df')
-      .leftJoinAndSelect('pr.estabelecimento', 'es')
-      .leftJoinAndSelect('es.endereco', 'en')
-      .leftJoinAndSelect('es.estabelecimentoCategoria', 'ec')
-      .andWhere('pr.id = :id', { id })
-      .getOne();
+    const idNumber = Number(id);
+
+    const promocao = await this.promocaoRepository.findOne({
+      relations: [
+        'promocaoCategoria',
+        'promocaoCategoria.categoriaPromocao',
+        'promocaoDia.dia',
+        'estabelecimento',
+        'estabelecimento.endereco',
+        'estabelecimento.estabelecimentoCategoria',
+      ],
+      where: { id: idNumber },
+    });
 
     return {
+      ...promocao,
       id: promocao.id,
-      descricao: promocao.descricao,
-      promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
       promocaoCategoria: promocao.promocaoCategoria.map(
         (pc) => pc.categoriaPromocao,
       ),
+      promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
       estabelecimento: {
         ...promocao.estabelecimento,
         endereco: promocao.estabelecimento.endereco,
@@ -187,6 +189,7 @@ export class PromocaoService {
         const novaPromocao = transactionalEntityManager.create(Promocao, {
           ...promocaoDto,
           estabelecimento: estabelecimento,
+          promocaoCategoria: undefined,
         });
         const savedPromocao = await transactionalEntityManager.save(
           Promocao,
@@ -197,16 +200,11 @@ export class PromocaoService {
           PromocaoCategoriaPromocao,
           await Promise.all(
             promocaoDto.promocaoCategoria.map(async (pc) => {
-              console.log(
-                'PromocaoService : promocaoDto.promocaoCategoria.map : promocaoCategoria:',
-                pc,
-              );
               const categoriaPromocao =
                 await transactionalEntityManager.findOne(CategoriaPromocao, {
                   where: { id: pc.idCategoriaPromocao },
                 });
               return {
-                ...pc,
                 promocao: savedPromocao,
                 categoriaPromocao: categoriaPromocao,
               };
