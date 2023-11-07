@@ -99,38 +99,38 @@ export class PromocaoController {
   }
 
   //TODO: Finalizar implementação do update
-  // @ApiOperation({ summary: 'Alterar promocao por ID' })
-  // @ApiHeaders([
-  //   { name: 'Authorization', required: true, description: 'Bearer <token>' },
-  // ])
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'Promoçao alterada com sucesso.',
-  // })
-  // @ApiBody({ type: UpdatePromocaoDto })
-  // @ApiParam({
-  //   name: 'ID',
-  //   type: 'string',
-  //   description: 'Id do estabelecimento',
-  // })
-  // @UseGuards(AuthEstabelecimentoGuard)
-  // @Patch(':id')
-  // async update(
-  //   @Param('id') id: string,
-  //   @Body() updatePromocaoDto: UpdatePromocaoDto,
-  // ) {
-  //   try {
-  //     return await this.promocao.update(id, updatePromocaoDto);
-  //   } catch (error) {
-  //     throw new HttpException(
-  //       {
-  //         status: HttpStatus.BAD_REQUEST,
-  //         error: 'Não foi possível alterar o estabelecimento.' + error.message,
-  //       },
-  //       HttpStatus.BAD_REQUEST,
-  //     );
-  //   }
-  // }
+  @ApiOperation({ summary: 'Alterar promocao por ID' })
+  @ApiHeaders([
+    { name: 'Authorization', required: true, description: 'Bearer <token>' },
+  ])
+  @ApiResponse({
+    status: 200,
+    description: 'Promoçao alterada com sucesso.',
+  })
+  @ApiBody({ type: UpdatePromocaoDto })
+  @ApiParam({
+    name: 'ID',
+    type: 'number',
+    description: 'Id do estabelecimento',
+  })
+  @UseGuards(AuthEstabelecimentoGuard)
+  @Patch(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() updatePromocaoDto: UpdatePromocaoDto,
+  ) {
+    try {
+      return await this.promocao.update(id, updatePromocaoDto);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Não foi possível alterar a promocao.' + error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 
   @ApiOperation({ summary: 'Excluir promocao por id' })
   @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
