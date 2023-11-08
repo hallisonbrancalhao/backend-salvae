@@ -17,8 +17,8 @@ export class PromocaoService {
     private readonly estabelecimentoRepository: Repository<Estabelecimento>,
     @Inject('PROMOCAO')
     private readonly promocaoRepository: Repository<Promocao>,
-    @Inject('PROMOCAO_CATEGORIA_PROMOCAO')
-    private readonly promocaoCategoriaPromocao: Repository<PromocaoCategoriaPromocao>,
+    @Inject('CATEGORIA_PROMOCAO')
+    private readonly categoriaPromocao: Repository<CategoriaPromocao>,
     private readonly connection: DataSource,
   ) {}
 
@@ -84,6 +84,13 @@ export class PromocaoService {
         endereco: promocao.estabelecimento.endereco,
       },
     };
+  }
+
+  async getCategoriaPromocao() {
+    return (await this.categoriaPromocao.find()).map((cp) => ({
+      idCategoriaPromocao: cp.id,
+      label: cp.nome,
+    }));
   }
 
   async update(id: number, updatePromocaoDto: UpdatePromocaoDto) {

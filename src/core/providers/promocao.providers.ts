@@ -1,4 +1,9 @@
-import { Promocao, PromocaoCategoriaPromocao, PromocaoDia } from '../infra';
+import {
+  CategoriaPromocao,
+  Promocao,
+  PromocaoCategoriaPromocao,
+  PromocaoDia,
+} from '../infra';
 import { DataSource } from 'typeorm';
 
 export const promocaoProviders = [
@@ -17,6 +22,12 @@ export const promocaoProviders = [
     provide: 'PROMOCAO_DIA',
     useFactory: (dataSource: DataSource) =>
       dataSource.getRepository(PromocaoDia),
+    inject: ['DATABASE_CONNECTION'],
+  },
+  {
+    provide: 'CATEGORIA_PROMOCAO',
+    useFactory: (dataSource: DataSource) =>
+      dataSource.getRepository(CategoriaPromocao),
     inject: ['DATABASE_CONNECTION'],
   },
 ];
