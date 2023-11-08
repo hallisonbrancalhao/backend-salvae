@@ -75,6 +75,23 @@ export class EstabelecimentoController {
     }
   }
 
+  @ApiOperation({ summary: 'Listar todas categorias' })
+  @ApiResponse({ status: 200, description: 'Lista de categorias' })
+  @Get('categorias')
+  async getAllCategorias() {
+    try {
+      return await this.estabelecimento.getAllCategorias();
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Nenhum estabelecimento encontrado.' + error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Encontrar estabelecimento por ' })
   @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
   @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })

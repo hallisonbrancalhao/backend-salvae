@@ -75,6 +75,23 @@ export class PromocaoController {
     }
   }
 
+  @ApiOperation({ summary: 'Listar categorias do estabelecimento' })
+  @ApiResponse({ status: 302, description: 'Categorias listadas' })
+  @Get('categorias')
+  async getCategoriaPromocao() {
+    try {
+      return await this.promocao.getCategoriaPromocao();
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @ApiOperation({ summary: 'Encontrar promoção por Id' })
   @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })
   @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
