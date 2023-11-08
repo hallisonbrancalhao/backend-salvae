@@ -40,7 +40,6 @@ export class PromocaoService {
         'promocaoDia.dia',
         'estabelecimento',
         'estabelecimento.endereco',
-        'estabelecimento.estabelecimentoCategoria',
       ],
     });
 
@@ -67,6 +66,7 @@ export class PromocaoService {
         'promocaoDia.dia',
         'estabelecimento',
         'estabelecimento.endereco',
+        'estabelecimento.coordenadas',
         'estabelecimento.estabelecimentoCategoria',
       ],
       where: { id: idNumber },
@@ -75,6 +75,7 @@ export class PromocaoService {
     return {
       ...promocao,
       id: promocao.id,
+      idEstabelecimento: promocao.estabelecimento.id,
       promocaoCategoria: promocao.promocaoCategoria.map(
         (pc) => pc.categoriaPromocao,
       ),
