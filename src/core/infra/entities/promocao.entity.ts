@@ -35,4 +35,7 @@ export class Promocao {
 
   @Column({ type: 'varchar' })
   descricao: string;
+
+  @Column({ type: 'boolean', default: true })
+  status: boolean;
 }

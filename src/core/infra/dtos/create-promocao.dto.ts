@@ -1,4 +1,10 @@
-import { IsNumber, IsNotEmpty, IsArray, IsString } from 'class-validator';
+import {
+  IsNumber,
+  IsNotEmpty,
+  IsArray,
+  IsString,
+  IsBoolean,
+} from 'class-validator';
 import { PromocaoDiaDto } from './promocao-dia.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { PromocaoCategoriaPromocaoDto } from './promocao-categoria-promocao.dto';
@@ -22,4 +28,8 @@ export class CreatePromocaoDto {
   @IsString()
   @IsNotEmpty()
   descricao: string;
+
+  @ApiProperty()
+  @IsBoolean()
+  status: boolean;
 }
