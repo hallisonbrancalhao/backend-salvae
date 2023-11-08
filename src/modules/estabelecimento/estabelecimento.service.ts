@@ -101,6 +101,13 @@ export class EstabelecimentoService {
       .getMany();
   }
 
+  async getAllCategorias() {
+    return (await this.categoriaRepository.find()).map((categoria) => ({
+      label: categoria.nome,
+      value: categoria.id,
+    }));
+  }
+
   async findByCnpj(cnpj: string) {
     return this.estabelecimentoRepository
       .createQueryBuilder('estabelecimento')
