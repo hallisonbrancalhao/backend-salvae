@@ -6,16 +6,6 @@ export class GeocodingService {
     cep: string,
     numero: string,
   ): Promise<{ latitude: string; longitude: string }> {
-    //Random coordinates for testing
-    const random = Math.random();
-    const randomLatitude = random * 180 - 90;
-    const randomLongitude = random * 360 - 180;
-
-    return {
-      latitude: String(randomLatitude),
-      longitude: String(randomLongitude),
-    };
-
     const endereco = `${numero} ${cep}, Brazil`;
 
     try {
