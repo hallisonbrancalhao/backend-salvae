@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class GeocodingService {
@@ -26,8 +26,7 @@ export class GeocodingService {
         );
       }
     } catch (error) {
-      console.error('Erro ao buscar as coordenadas:', error);
-      throw error;
+      throw new BadRequestException('Erro ao buscar as coordenadas:', error);
     }
   }
 }

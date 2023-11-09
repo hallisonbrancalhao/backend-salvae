@@ -34,10 +34,6 @@ export class EstabelecimentoService {
       async (transactionalEntityManager) => {
         const { endereco, estabelecimentoCategoria, ...dataEstabelecimento } =
           createEstabelecimentoDto;
-        console.log(
-          'EstabelecimentoService : estabelecimentoCategoria:',
-          estabelecimentoCategoria,
-        );
 
         const { latitude, longitude } =
           await this.geocodingService.getCoordinates(
@@ -67,11 +63,6 @@ export class EstabelecimentoService {
           coordenadas: coordenadasEntity,
           endereco: enderecoEntity,
         });
-
-        console.log(
-          'EstabelecimentoService : estabelecimentoEntity:',
-          estabelecimentoEntity,
-        );
         await transactionalEntityManager.save(estabelecimentoEntity);
 
         return estabelecimentoEntity;

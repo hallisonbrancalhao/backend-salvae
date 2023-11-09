@@ -39,6 +39,7 @@ export class PromocaoService {
         'promocaoCategoria.categoriaPromocao',
         'promocaoDia.dia',
         'estabelecimento',
+        'estabelecimento.coordenadas',
         'estabelecimento.endereco',
       ],
     });
