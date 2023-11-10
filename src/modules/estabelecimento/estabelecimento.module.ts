@@ -4,7 +4,6 @@ import { EstabelecimentoController } from './estabelecimento.controller';
 import { estabelecimentoProviders } from '../../core/providers/estabelecimento.providers';
 import { GeocodingService } from 'src/utilities';
 import { PasswordHasherService } from 'src/utilities/password-hasher';
-import { DataSource } from 'typeorm';
 
 @Module({
   controllers: [EstabelecimentoController],

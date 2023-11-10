@@ -6,7 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from '@nestjs/class-validator';
-import { User } from 'src/core/infra/entities/users.entity';
+import { User } from '../entities/users.entity';
 
 @Entity({ name: 'Endereco' })
 export class Endereco {
