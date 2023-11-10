@@ -105,6 +105,7 @@ export class EstabelecimentoService {
       .select([
         'estabelecimento.id',
         'estabelecimento.nome',
+        'estabelecimento.senha',
         'estabelecimento.cnpj',
         'estabelecimento.instagram',
         'estabelecimento.whatsapp',
