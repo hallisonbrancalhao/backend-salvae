@@ -13,6 +13,7 @@ import {
 } from '../../utilities';
 import { DataSource, Repository } from 'typeorm';
 import { StatusCupom } from 'src/core/enum/status-cupom.enum';
+import { CupomEncontradoDto } from 'src/core/infra/dtos/find-by-code.dto';
 
 @Injectable()
 export class CupomService {
@@ -80,5 +81,112 @@ export class CupomService {
         description: 'Cupom validado com sucesso.',
       };
     }
+  }
+
+  async findAll(): Promise<Cupom[]> {
+    return await this.cupomRepository.find();
+  }
+
+  async findByUser(id: string): Promise<Cupom[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: Number(id) },
+    });
+
+    if (!user) {
+      throw new Error('Usuário não encontrado');
+    }
+
+    return await this.cupomRepository.find({
+      where: { user: { id: user.id } },
+    });
+  }
+
+  async findByPromocao(id: string): Promise<Cupom[]> {
+    const promocao = await this.promocaoRepository.findOne({
+      where: { id: Number(id) },
+    });
+
+    if (!promocao) {
+      throw new Error('Promocao não encontrado');
+    }
+
+    return await this.cupomRepository.find({
+      where: { user: { id: promocao.id } },
+    });
+  }
+
+  async findByCodigo(codigo: string): Promise<CupomEncontradoDto> {
+    const cupom = await this.cupomRepository.findOne({
+      where: { codigo: codigo },
+      relations: ['promocao', 'user'],
+    });
+
+    if (!cupom) {
+      throw new Error('Cupom não encontrado');
+    }
+
+    return {
+      id: cupom.id,
+      codigo: cupom.codigo,
+      dataValidade: cupom.dataValidade,
+      status: cupom.status,
+      promocao: cupom.promocao,
+      user: cupom.user,
+    };
+  }
+
+  async desativar({ codigo }: { codigo: string }) {
+    const cupom = await this.cupomRepository.findOne({
+      where: { codigo: codigo },
+    });
+
+    if (!cupom) {
+      throw new Error('Cupom não encontrado');
+    }
+
+    await this.cupomRepository.update(cupom.id, {
+      status: StatusCupom.INATIVO,
+    });
+
+    return {
+      status: 200,
+      description: 'Cupom desativado com sucesso.',
+    };
+  }
+
+  async ativar({ codigo }: { codigo: string }) {
+    const cupom = await this.cupomRepository.findOne({
+      where: { codigo: codigo },
+    });
+
+    if (!cupom) {
+      throw new Error('Cupom não encontrado');
+    }
+
+    await this.cupomRepository.update(cupom.id, {
+      status: StatusCupom.ATIVO,
+    });
+
+    return {
+      status: 200,
+      description: 'Cupom ativado com sucesso.',
+    };
+  }
+
+  async delete(id: string) {
+    const cupom = await this.cupomRepository.findOne({
+      where: { id: Number(id) },
+    });
+
+    if (!cupom) {
+      throw new Error('Cupom não encontrado');
+    }
+
+    await this.cupomRepository.remove(cupom);
+
+    return {
+      status: 200,
+      description: 'Cupom deletado com sucesso.',
+    };
   }
 }

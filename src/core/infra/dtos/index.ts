@@ -6,6 +6,7 @@ export * from './create-estabelecimento.dto';
 export * from './create-promocao.dto';
 export * from './create-user.dto';
 export * from './estabelecimento-login.dto';
+export * from './find-by-code.dto';
 export * from './promocao-categoria-promocao.dto';
 export * from './promocao-dia.dto';
 export * from './update-endereco-estabelecimento';
