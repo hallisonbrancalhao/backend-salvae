@@ -34,6 +34,7 @@ export class UsersService {
   async findAll() {
     return await this.userRepository.find({
       select: [
+        'id',
         'nome',
         'sobrenome',
         'email',
@@ -50,6 +51,7 @@ export class UsersService {
     return await this.userRepository
       .createQueryBuilder('user')
       .select([
+        'user.id',
         'user.nome',
         'user.sobrenome',
         'user.email',

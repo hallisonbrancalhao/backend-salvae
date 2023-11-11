@@ -9,6 +9,7 @@ import {
 import { Estabelecimento } from './estabelecimento.entity';
 import { PromocaoCategoriaPromocao } from './promocao-categoria-promo.entity';
 import { PromocaoDia } from './promocao-dia.entity';
+import { Cupom } from './cupom.entity';
 
 @Entity('Promocao')
 export class Promocao {
@@ -35,6 +36,9 @@ export class Promocao {
 
   @Column({ type: 'varchar' })
   descricao: string;
+
+  @OneToMany(() => Cupom, (cupom) => cupom.promocao)
+  cupom: Cupom[];
 
   @Column({ type: 'boolean', default: true })
   status: boolean;

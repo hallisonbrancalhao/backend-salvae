@@ -2,6 +2,7 @@ export * from './avaliacao.entity';
 export * from './categoria-estabelecimento.entity';
 export * from './categoria-promocao.entity';
 export * from './coordenadas.entity';
+export * from './cupom.entity';
 export * from './dia-funcionamento.entity';
 export * from './endereco-estabelecimento.entity';
 export * from './endereco.entity';
