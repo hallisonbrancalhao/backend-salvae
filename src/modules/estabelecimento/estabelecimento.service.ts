@@ -9,6 +9,8 @@ import {
   CategoriaEstabelecimento,
 } from '../../core/infra';
 import { GeocodingService, PasswordHasherService } from '../../utilities';
+import { saveImage } from 'src/utilities/save-image';
+import { ImagesService } from '../images/images.service';
 
 @Injectable()
 export class EstabelecimentoService {
@@ -23,46 +25,73 @@ export class EstabelecimentoService {
     private readonly categoriaRepository: Repository<CategoriaEstabelecimento>,
     @Inject('DATABASE_CONNECTION')
     private readonly connection: DataSource,
+    private readonly imageService: ImagesService,
     private readonly geocodingService: GeocodingService,
     private readonly hasher: PasswordHasherService,
   ) {}
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto) {
+    const {
+      cnpj,
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+    } = createEstabelecimentoDto;
+    const endereco = {
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+    };
+
     return await this.connection.transaction(
       async (transactionalEntityManager) => {
-        const { endereco, estabelecimentoCategoria, ...dataEstabelecimento } =
-          createEstabelecimentoDto;
-
+        const {
+          estabelecimentoCategoria,
+          fotoCapa,
+          fotoPerfil,
+          ...dataEstabelecimento
+        } = createEstabelecimentoDto;
         const { latitude, longitude } =
           await this.geocodingService.getCoordinates(
             endereco.cep,
             endereco.numero,
           );
-
         const hashedPass = await this.hasher.hashPassword(
           createEstabelecimentoDto.senha,
         );
         dataEstabelecimento.senha = hashedPass;
-
         const coordenadasEntity = this.coordenadasRepository.create({
           latitude,
           longitude,
         });
 
-        const enderecoEntity = this.enderecoRepository.create(endereco);
+        const hashFotoCapa = await this.imageService.upload(fotoCapa);
+        const hashFotoPerfil = await this.imageService.upload(fotoPerfil);
 
+        const enderecoEntity = this.enderecoRepository.create(endereco);
         const categoriaEntity = await this.categoriaRepository.findOne({
-          where: { id: estabelecimentoCategoria },
+          where: { id: Number(estabelecimentoCategoria) },
         });
 
         const estabelecimentoEntity = this.estabelecimentoRepository.create({
           ...dataEstabelecimento,
+          fotoCapa: hashFotoCapa,
+          fotoPerfil: hashFotoPerfil,
           estabelecimentoCategoria: categoriaEntity,
           coordenadas: coordenadasEntity,
           endereco: enderecoEntity,
         });
         await transactionalEntityManager.save(estabelecimentoEntity);
-
         return estabelecimentoEntity;
       },
     );
@@ -147,34 +176,34 @@ export class EstabelecimentoService {
   async update(id: string, updateEstabelecimentoDto: UpdateEstabelecimentoDto) {
     const estabelecimentoEntity = await this.findOne(id);
 
-    if (!estabelecimentoEntity) {
-      throw new Error('Estabelecimento não encontrado.');
-    }
+    // if (!estabelecimentoEntity) {
+    //   throw new Error('Estabelecimento não encontrado.');
+    // }
 
-    const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
+    // const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
 
-    if (endereco) {
-      const { latitude, longitude } =
-        await this.geocodingService.getCoordinates(
-          endereco.cep,
-          endereco.numero,
-        );
-      const coordenadasEntity = this.coordenadasRepository.create({
-        latitude,
-        longitude,
-      });
-      const enderecoEntity = this.enderecoRepository.create(endereco);
-      estabelecimentoEntity.endereco = enderecoEntity;
-      estabelecimentoEntity.coordenadas = coordenadasEntity;
-      await this.coordenadasRepository.save(coordenadasEntity);
-      await this.enderecoRepository.save(enderecoEntity);
-    }
+    // if (endereco) {
+    //   const { latitude, longitude } =
+    //     await this.geocodingService.getCoordinates(
+    //       endereco.cep,
+    //       endereco.numero,
+    //     );
+    //   const coordenadasEntity = this.coordenadasRepository.create({
+    //     latitude,
+    //     longitude,
+    //   });
+    //   const enderecoEntity = this.enderecoRepository.create(endereco);
+    //   estabelecimentoEntity.endereco = enderecoEntity;
+    //   estabelecimentoEntity.coordenadas = coordenadasEntity;
+    //   await this.coordenadasRepository.save(coordenadasEntity);
+    //   await this.enderecoRepository.save(enderecoEntity);
+    // }
 
-    Object.assign(estabelecimentoEntity, dataEstabelecimento);
-    await this.estabelecimentoRepository.update(
-      { id: estabelecimentoEntity.id },
-      estabelecimentoEntity,
-    );
+    // Object.assign(estabelecimentoEntity, dataEstabelecimento);
+    // await this.estabelecimentoRepository.update(
+    //   { id: estabelecimentoEntity.id },
+    //   estabelecimentoEntity,
+    // );
 
     return estabelecimentoEntity;
   }

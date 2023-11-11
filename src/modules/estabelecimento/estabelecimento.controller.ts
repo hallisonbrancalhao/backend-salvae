@@ -2,13 +2,19 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpException,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
+  UploadedFile,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,7 +29,12 @@ import {
   AuthEstabelecimentoGuard,
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
+  UploadImageDto,
 } from 'src/core/infra';
+import {
+  FileFieldsInterceptor,
+  FileInterceptor,
+} from '@nestjs/platform-express';
 
 @ApiTags('Estabelecimentos')
 @Controller('estabelecimento')
@@ -40,13 +51,28 @@ export class EstabelecimentoController {
     description: 'Dados do estabelecimento a ser criado.',
   })
   @Post()
-  async create(@Body() createEstabelecimentoDto: CreateEstabelecimentoDto) {
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'fotoCapa', maxCount: 1 },
+      { name: 'fotoPerfil', maxCount: 1 },
+    ]),
+  )
+  async create(
+    @UploadedFiles()
+    files: {
+      fotoCapa?: Express.Multer.File[];
+      fotoPerfil?: Express.Multer.File[];
+    },
+    @Body() createEstabelecimentoDto: CreateEstabelecimentoDto,
+  ) {
     try {
-      await this.estabelecimento.create(createEstabelecimentoDto);
-      return {
-        status: 201,
-        description: 'Estabelecimento criado com sucesso.',
-      };
+      if (files.fotoCapa && files.fotoCapa[0]) {
+        createEstabelecimentoDto.fotoCapa = files.fotoCapa[0];
+      }
+      if (files.fotoPerfil && files.fotoPerfil[0]) {
+        createEstabelecimentoDto.fotoPerfil = files.fotoPerfil[0];
+      }
+      return await this.estabelecimento.create(createEstabelecimentoDto);
     } catch (error) {
       return new HttpException(
         {

@@ -8,6 +8,7 @@ import { EstabelecimentoService } from 'src/modules/estabelecimento/estabelecime
 import { estabelecimentoProviders } from 'src/core/providers/estabelecimento.providers';
 import { GeocodingService } from 'src/utilities';
 import { PasswordHasherService } from 'src/utilities/password-hasher';
+import { ImagesService } from 'src/modules/images/images.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { PasswordHasherService } from 'src/utilities/password-hasher';
     PasswordHasherService,
     AuthEstabelecimentoService,
     EstabelecimentoService,
+    ImagesService,
     ...estabelecimentoProviders,
   ],
 })
