@@ -1,5 +1,4 @@
-import { DataSource, In, Repository } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
+import { DataSource, Repository } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import {
   Estabelecimento,
@@ -8,9 +7,8 @@ import {
   UpdateEstabelecimentoDto,
   Coordenadas,
   CategoriaEstabelecimento,
-} from 'src/core/infra';
-import { GeocodingService } from 'src/utilities';
-import { PasswordHasherService } from 'src/utilities/password-hasher';
+} from '../../core/infra';
+import { GeocodingService, PasswordHasherService } from '../../utilities';
 
 @Injectable()
 export class EstabelecimentoService {
@@ -78,12 +76,13 @@ export class EstabelecimentoService {
         'estabelecimento.nome',
         'estabelecimento.cnpj',
         'estabelecimento.instagram',
-        'estabelecimento.whatsapp',
-        'estabelecimento.fotoCapa',
-        'estabelecimento.fotoPerfil',
         'categoria',
         'endereco',
         'coordenadas',
+        'estabelecimento.whatsapp',
+        'estabelecimento.estabelecimentoCategoria',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
@@ -129,6 +128,7 @@ export class EstabelecimentoService {
         'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
+        'estabelecimento.estabelecimentoCategoria',
         'estabelecimento.instagram',
         'estabelecimento.whatsapp',
         'estabelecimento.fotoCapa',
@@ -139,12 +139,18 @@ export class EstabelecimentoService {
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
+      .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .where('estabelecimento.id = :id', { id })
       .getOneOrFail();
   }
 
   async update(id: string, updateEstabelecimentoDto: UpdateEstabelecimentoDto) {
     const estabelecimentoEntity = await this.findOne(id);
+
+    if (!estabelecimentoEntity) {
+      throw new Error('Estabelecimento não encontrado.');
+    }
+
     const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
 
     if (endereco) {

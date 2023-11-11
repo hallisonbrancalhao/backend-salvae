@@ -6,7 +6,6 @@ import {
 } from '@nestjs/class-validator';
 import { CreateEnderecoEstabelecimentoDto } from './create-endereco-estabelecimento.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { CategoriaEstabelecimento } from '../entities';
 
 export class CreateEstabelecimentoDto {
   @ApiProperty()
