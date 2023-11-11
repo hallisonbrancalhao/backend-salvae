@@ -76,12 +76,13 @@ export class EstabelecimentoService {
         'estabelecimento.nome',
         'estabelecimento.cnpj',
         'estabelecimento.instagram',
-        'estabelecimento.whatsapp',
-        'estabelecimento.fotoCapa',
-        'estabelecimento.fotoPerfil',
         'categoria',
         'endereco',
         'coordenadas',
+        'estabelecimento.whatsapp',
+        'estabelecimento.estabelecimentoCategoria',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
@@ -127,6 +128,7 @@ export class EstabelecimentoService {
         'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
+        'estabelecimento.estabelecimentoCategoria',
         'estabelecimento.instagram',
         'estabelecimento.whatsapp',
         'estabelecimento.fotoCapa',
@@ -137,6 +139,7 @@ export class EstabelecimentoService {
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
+      .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .where('estabelecimento.id = :id', { id })
       .getOneOrFail();
   }
