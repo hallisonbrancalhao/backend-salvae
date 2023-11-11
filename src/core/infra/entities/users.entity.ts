@@ -8,9 +8,12 @@ import {
   OneToOne,
   JoinColumn,
   Unique,
+  ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { Endereco } from './endereco.entity';
+import { Cupom } from './cupom.entity';
 
 @Entity({ name: 'Usuario' })
 export class User {
@@ -47,6 +50,9 @@ export class User {
   @OneToOne(() => Endereco, { cascade: true, onDelete: 'CASCADE' })
   @JoinColumn()
   endereco: Endereco;
+
+  @OneToMany(() => Cupom, (cupom) => cupom.user)
+  cupom: Cupom[];
 
   @Column()
   @IsString({ message: 'A data deve ser no formato dd/mm/yyyy' })
