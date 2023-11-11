@@ -7,6 +7,7 @@ import { DatabaseModule } from './database/database.module';
 import { EstabelecimentoModule } from './modules/estabelecimento/estabelecimento.module';
 import { AuthEstabelecimentoModule } from './modules/auth/estabelecimento/auth-estabelecimento.module';
 import { PromocaoModule } from './modules/promocao/promocao.module';
+import { CupomModule } from './modules/cupom/cupom.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { PromocaoModule } from './modules/promocao/promocao.module';
     AuthUserModule,
     AuthEstabelecimentoModule,
     PromocaoModule,
+    CupomModule,
   ],
 })
 export class AppModule {}

@@ -8,9 +8,9 @@ import {
   UpdateEstabelecimentoDto,
   Coordenadas,
   CategoriaEstabelecimento,
-} from 'src/core/infra';
-import { GeocodingService } from 'src/utilities';
-import { PasswordHasherService } from 'src/utilities/password-hasher';
+} from '../../core/infra';
+import { GeocodingService } from '../../utilities';
+import { PasswordHasherService } from '../../utilities/password-hasher';
 
 @Injectable()
 export class EstabelecimentoService {

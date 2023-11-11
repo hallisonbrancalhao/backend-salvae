@@ -9,6 +9,7 @@ import {
   JoinColumn,
   Unique,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, IsString } from '@nestjs/class-validator';
 import { Endereco } from './endereco.entity';
@@ -50,7 +51,7 @@ export class User {
   @JoinColumn()
   endereco: Endereco;
 
-  @ManyToOne(() => Cupom, (cupom) => cupom.user)
+  @OneToMany(() => Cupom, (cupom) => cupom.user)
   cupom: Cupom[];
 
   @Column()

@@ -1,4 +1,5 @@
 export * from './coordenadas.dto';
+export * from './create-cupom.dto';
 export * from './create-endereco-estabelecimento.dto';
 export * from './create-endereco.dto';
 export * from './create-estabelecimento.dto';
@@ -13,3 +14,4 @@ export * from './update-estabelecimento.dto';
 export * from './update-promocao.dto';
 export * from './update-user.dto';
 export * from './user-login.dto';
+export * from './validate-cupom.dto';
