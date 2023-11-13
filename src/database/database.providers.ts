@@ -1,5 +1,3 @@
-import { MongooseModule } from '@nestjs/mongoose';
-import mongoose from 'mongoose';
 import { DataSource } from 'typeorm';
 
 export const databaseProviders = [
