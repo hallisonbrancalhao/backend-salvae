@@ -36,6 +36,6 @@ export class ImagesController {
     )
     file: UploadImageDto,
   ) {
-    return this.imageService.upload(file);
+    return this.imageService.upload(file, '109.479.339-64', 'profile');
   }
 }

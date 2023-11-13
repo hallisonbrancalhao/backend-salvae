@@ -1,25 +1,58 @@
-import * as fs from 'fs';
+import { Injectable } from '@nestjs/common';
 import { UploadImageDto } from 'src/core/infra';
-const path = require('path');
+import { Client } from 'basic-ftp';
+import { Readable } from 'stream';
 
-export async function saveImage(userId: string, file: UploadImageDto) {
-  const { buffer, originalname } = file;
-  const id = userId.replace(/-/g, '');
-  const [name, ext] = originalname.split('.');
-  const fileNameWithHash = `${name}-${id}.${ext}`;
+@Injectable()
+export class FtpService {
+  private client = new Client();
 
-  fs.mkdirSync(path.resolve(__dirname, '..', 'api', 'images', `${id}`), {
-    recursive: true,
-  });
+  constructor() {}
 
-  const filePath = path.resolve(
-    __dirname,
-    '..',
-    'api',
-    'images',
-    `${id}`,
-    fileNameWithHash,
-  );
-  fs.writeFileSync(filePath, buffer);
-  return `uploads/${id}/${fileNameWithHash}`;
+  async connect() {
+    try {
+      await this.client.access({
+        host: process.env.FTP_HOST,
+        user: process.env.FTP_USER,
+        password: process.env.FTP_PASS,
+        secure: false,
+      });
+      console.log('Connected to FTP server');
+    } catch (error) {
+      console.error('Error connecting to FTP server:', error);
+    }
+  }
+
+  async disconnect() {
+    try {
+      await this.client.close();
+      console.log('Disconnected from FTP server');
+    } catch (error) {
+      console.error('Error disconnecting from FTP server:', error);
+    }
+  }
+
+  async saveImage(file: UploadImageDto, folder: string, name: string) {
+    const path = `/api/images/${folder.replace(/\D/g, '').toLowerCase()}`;
+    try {
+      await this.connect();
+
+      await this.client.ensureDir(path);
+      const stream = new Readable();
+
+      stream.push(file.buffer);
+      stream.push(null);
+
+      const fullName = `${path}/${name}.${file.originalname.split('.')[1]}`;
+
+      await this.client.uploadFrom(stream, fullName);
+      await this.disconnect();
+
+      return `https://api.salvae.com.br/images/${folder}/${file.originalname}`;
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      await this.disconnect();
+    }
+  }
 }

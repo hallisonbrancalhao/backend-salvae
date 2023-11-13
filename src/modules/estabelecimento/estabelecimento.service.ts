@@ -9,7 +9,6 @@ import {
   CategoriaEstabelecimento,
 } from '../../core/infra';
 import { GeocodingService, PasswordHasherService } from '../../utilities';
-import { saveImage } from 'src/utilities/save-image';
 import { ImagesService } from '../images/images.service';
 
 @Injectable()
@@ -75,8 +74,16 @@ export class EstabelecimentoService {
           longitude,
         });
 
-        const hashFotoCapa = await this.imageService.upload(fotoCapa);
-        const hashFotoPerfil = await this.imageService.upload(fotoPerfil);
+        const hashFotoCapa = await this.imageService.upload(
+          fotoCapa,
+          cnpj,
+          'banner',
+        );
+        const hashFotoPerfil = await this.imageService.upload(
+          fotoPerfil,
+          cnpj,
+          'profile',
+        );
 
         const enderecoEntity = this.enderecoRepository.create(endereco);
         const categoriaEntity = await this.categoriaRepository.findOne({

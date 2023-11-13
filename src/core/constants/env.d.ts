@@ -13,5 +13,8 @@ declare namespace NodeJS {
     DB_ROOT_PASSWORD: string;
     GOOGLE_MAPS_API_KEY: string;
     GOOGLE_MAPS_BASE_URL: string;
+    FTP_HOST: string;
+    FTP_USER: string;
+    FTP_PASS: string;
   }
 }
