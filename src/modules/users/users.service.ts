@@ -65,9 +65,9 @@ export class UsersService {
       .getOneOrFail();
   }
 
-  async findUser(id: string) {
+  async findUserbyEmail(email: string) {
     return await this.userRepository.findOne({
-      where: { id: Number(id) },
+      where: { email },
       relations: ['endereco'],
     });
   }

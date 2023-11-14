@@ -32,7 +32,7 @@ export class AuthUserService {
     senha: string,
   ): Promise<Response | BadRequestException> {
     try {
-      const user = await this.userService.findUser(email);
+      const user = await this.userService.findUserbyEmail(email);
       const validPassword: boolean = await bcrypt.compare(senha, user.senha);
 
       if (!validPassword) throw new UnauthorizedException();
