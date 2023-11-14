@@ -180,37 +180,94 @@ export class EstabelecimentoService {
       .getOneOrFail();
   }
 
-  async update(id: string, updateEstabelecimentoDto: UpdateEstabelecimentoDto) {
+  async update(
+    id: string,
+    updateEstabelecimentoDto: Partial<UpdateEstabelecimentoDto>,
+  ) {
     const estabelecimentoEntity = await this.findOne(id);
 
-    // if (!estabelecimentoEntity) {
-    //   throw new Error('Estabelecimento não encontrado.');
-    // }
+    if (!estabelecimentoEntity) {
+      throw new Error('Estabelecimento não encontrado.');
+    }
 
-    // const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
+    const {
+      cnpj,
+      fotoCapa,
+      fotoPerfil,
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+      ...dataEstabelecimento
+    } = updateEstabelecimentoDto;
+    const endereco = {
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+    };
 
-    // if (endereco) {
-    //   const { latitude, longitude } =
-    //     await this.geocodingService.getCoordinates(
-    //       endereco.cep,
-    //       endereco.numero,
-    //     );
-    //   const coordenadasEntity = this.coordenadasRepository.create({
-    //     latitude,
-    //     longitude,
-    //   });
-    //   const enderecoEntity = this.enderecoRepository.create(endereco);
-    //   estabelecimentoEntity.endereco = enderecoEntity;
-    //   estabelecimentoEntity.coordenadas = coordenadasEntity;
-    //   await this.coordenadasRepository.save(coordenadasEntity);
-    //   await this.enderecoRepository.save(enderecoEntity);
-    // }
+    if (endereco) {
+      const { latitude, longitude } =
+        await this.geocodingService.getCoordinates(
+          endereco.cep,
+          endereco.numero,
+        );
+      const coordenadasEntity = this.coordenadasRepository.create({
+        latitude,
+        longitude,
+      });
+      const enderecoEntity = this.enderecoRepository.create(endereco);
+      estabelecimentoEntity.endereco = enderecoEntity;
+      console.log(
+        'EstabelecimentoService : estabelecimentoEntity:',
+        estabelecimentoEntity.endereco,
+      );
+      estabelecimentoEntity.coordenadas = coordenadasEntity;
 
-    // Object.assign(estabelecimentoEntity, dataEstabelecimento);
-    // await this.estabelecimentoRepository.update(
-    //   { id: estabelecimentoEntity.id },
-    //   estabelecimentoEntity,
-    // );
+      await this.coordenadasRepository.save(coordenadasEntity);
+      await this.enderecoRepository.save(enderecoEntity);
+    }
+
+    Object.assign(estabelecimentoEntity, dataEstabelecimento);
+
+    console.log(
+      'EstabelecimentoService : estabelecimentoEntity:',
+      estabelecimentoEntity,
+    );
+    await this.estabelecimentoRepository.update(
+      { id: estabelecimentoEntity.id },
+      estabelecimentoEntity,
+    );
+
+    try {
+      if (fotoCapa) {
+        const hashFotoCapa = await this.imageService.upload(
+          fotoCapa,
+          cnpj,
+          'banner',
+        );
+        estabelecimentoEntity.fotoCapa = hashFotoCapa;
+      }
+      if (fotoPerfil) {
+        const hashFotoPerfil = await this.imageService.upload(
+          fotoPerfil,
+          cnpj,
+          'profile',
+        );
+        estabelecimentoEntity.fotoPerfil = hashFotoPerfil;
+      }
+    } catch (error) {
+      throw new Error('Não foi possível atualizar as imagens.');
+    }
 
     return estabelecimentoEntity;
   }

@@ -12,8 +12,7 @@ export class ImagesService {
     name: string,
   ): Promise<string> {
     try {
-      const pathFile = await this.ftp.saveImage(file, folder, name);
-      return pathFile;
+      return await this.ftp.saveImage(file, folder, name);
     } catch (error) {
       throw new Error(error);
     }

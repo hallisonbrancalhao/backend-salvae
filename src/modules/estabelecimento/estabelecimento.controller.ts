@@ -29,12 +29,8 @@ import {
   AuthEstabelecimentoGuard,
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
-  UploadImageDto,
 } from 'src/core/infra';
-import {
-  FileFieldsInterceptor,
-  FileInterceptor,
-} from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Estabelecimentos')
 @Controller('estabelecimento')
@@ -158,20 +154,37 @@ export class EstabelecimentoController {
     description: 'id do estabelecimento',
   })
   @UseGuards(AuthEstabelecimentoGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'fotoCapa', maxCount: 1 },
+      { name: 'fotoPerfil', maxCount: 1 },
+    ]),
+  )
   @Patch(':id')
   async update(
+    @UploadedFiles()
+    files: {
+      fotoCapa?: Express.Multer.File[];
+      fotoPerfil?: Express.Multer.File[];
+    },
+    @Body() updateEstabelecimento: UpdateEstabelecimentoDto,
     @Param('id') id: string,
-    @Body() updateEstabelecimentoDto: UpdateEstabelecimentoDto,
   ) {
     try {
-      return await this.estabelecimento.update(id, updateEstabelecimentoDto);
+      if (files.fotoCapa && files.fotoCapa[0]) {
+        updateEstabelecimento.fotoCapa = files.fotoCapa[0];
+      }
+      if (files.fotoPerfil && files.fotoPerfil[0]) {
+        updateEstabelecimento.fotoPerfil = files.fotoPerfil[0];
+      }
+      return await this.estabelecimento.update(id, updateEstabelecimento);
     } catch (error) {
-      throw new HttpException(
+      return new HttpException(
         {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Não foi possível alterar o estabelecimento.' + error.message,
+          status: HttpStatus.FORBIDDEN,
+          error: 'Não foi possível alterar o estabelecimento.' + error,
         },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.FORBIDDEN,
       );
     }
   }

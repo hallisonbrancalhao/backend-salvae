@@ -48,7 +48,9 @@ export class FtpService {
       await this.client.uploadFrom(stream, fullName);
       await this.disconnect();
 
-      return `https://api.salvae.com.br/images/${folder}/${file.originalname}`;
+      return `https://api.salvae.com.br/images/${folder}/${name}.${
+        file.originalname.split('.')[1]
+      }`;
     } catch (error) {
       throw new Error(error);
     } finally {
