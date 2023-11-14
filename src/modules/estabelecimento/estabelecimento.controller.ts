@@ -2,13 +2,19 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpException,
   HttpStatus,
+  MaxFileSizeValidator,
   Param,
+  ParseFilePipe,
   Patch,
   Post,
+  UploadedFile,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -24,6 +30,7 @@ import {
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
 } from 'src/core/infra';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Estabelecimentos')
 @Controller('estabelecimento')
@@ -40,13 +47,28 @@ export class EstabelecimentoController {
     description: 'Dados do estabelecimento a ser criado.',
   })
   @Post()
-  async create(@Body() createEstabelecimentoDto: CreateEstabelecimentoDto) {
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'fotoCapa', maxCount: 1 },
+      { name: 'fotoPerfil', maxCount: 1 },
+    ]),
+  )
+  async create(
+    @UploadedFiles()
+    files: {
+      fotoCapa?: Express.Multer.File[];
+      fotoPerfil?: Express.Multer.File[];
+    },
+    @Body() createEstabelecimentoDto: CreateEstabelecimentoDto,
+  ) {
     try {
-      await this.estabelecimento.create(createEstabelecimentoDto);
-      return {
-        status: 201,
-        description: 'Estabelecimento criado com sucesso.',
-      };
+      if (files.fotoCapa && files.fotoCapa[0]) {
+        createEstabelecimentoDto.fotoCapa = files.fotoCapa[0];
+      }
+      if (files.fotoPerfil && files.fotoPerfil[0]) {
+        createEstabelecimentoDto.fotoPerfil = files.fotoPerfil[0];
+      }
+      return await this.estabelecimento.create(createEstabelecimentoDto);
     } catch (error) {
       return new HttpException(
         {
@@ -132,20 +154,37 @@ export class EstabelecimentoController {
     description: 'id do estabelecimento',
   })
   @UseGuards(AuthEstabelecimentoGuard)
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'fotoCapa', maxCount: 1 },
+      { name: 'fotoPerfil', maxCount: 1 },
+    ]),
+  )
   @Patch(':id')
   async update(
+    @UploadedFiles()
+    files: {
+      fotoCapa?: Express.Multer.File[];
+      fotoPerfil?: Express.Multer.File[];
+    },
+    @Body() updateEstabelecimento: UpdateEstabelecimentoDto,
     @Param('id') id: string,
-    @Body() updateEstabelecimentoDto: UpdateEstabelecimentoDto,
   ) {
     try {
-      return await this.estabelecimento.update(id, updateEstabelecimentoDto);
+      if (files.fotoCapa && files.fotoCapa[0]) {
+        updateEstabelecimento.fotoCapa = files.fotoCapa[0];
+      }
+      if (files.fotoPerfil && files.fotoPerfil[0]) {
+        updateEstabelecimento.fotoPerfil = files.fotoPerfil[0];
+      }
+      return await this.estabelecimento.update(id, updateEstabelecimento);
     } catch (error) {
-      throw new HttpException(
+      return new HttpException(
         {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Não foi possível alterar o estabelecimento.' + error.message,
+          status: HttpStatus.FORBIDDEN,
+          error: 'Não foi possível alterar o estabelecimento.' + error,
         },
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.FORBIDDEN,
       );
     }
   }

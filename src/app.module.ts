@@ -8,6 +8,7 @@ import { EstabelecimentoModule } from './modules/estabelecimento/estabelecimento
 import { AuthEstabelecimentoModule } from './modules/auth/estabelecimento/auth-estabelecimento.module';
 import { PromocaoModule } from './modules/promocao/promocao.module';
 import { CupomModule } from './modules/cupom/cupom.module';
+import { ImagesModule } from './modules/images/images.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CupomModule } from './modules/cupom/cupom.module';
     AuthEstabelecimentoModule,
     PromocaoModule,
     CupomModule,
+    ImagesModule,
   ],
 })
 export class AppModule {}

@@ -9,6 +9,7 @@ import {
   CategoriaEstabelecimento,
 } from '../../core/infra';
 import { GeocodingService, PasswordHasherService } from '../../utilities';
+import { ImagesService } from '../images/images.service';
 
 @Injectable()
 export class EstabelecimentoService {
@@ -23,46 +24,81 @@ export class EstabelecimentoService {
     private readonly categoriaRepository: Repository<CategoriaEstabelecimento>,
     @Inject('DATABASE_CONNECTION')
     private readonly connection: DataSource,
+    private readonly imageService: ImagesService,
     private readonly geocodingService: GeocodingService,
     private readonly hasher: PasswordHasherService,
   ) {}
 
   async create(createEstabelecimentoDto: CreateEstabelecimentoDto) {
+    const {
+      cnpj,
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+    } = createEstabelecimentoDto;
+    const endereco = {
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+    };
+
     return await this.connection.transaction(
       async (transactionalEntityManager) => {
-        const { endereco, estabelecimentoCategoria, ...dataEstabelecimento } =
-          createEstabelecimentoDto;
-
+        const {
+          estabelecimentoCategoria,
+          fotoCapa,
+          fotoPerfil,
+          ...dataEstabelecimento
+        } = createEstabelecimentoDto;
         const { latitude, longitude } =
           await this.geocodingService.getCoordinates(
             endereco.cep,
             endereco.numero,
           );
-
         const hashedPass = await this.hasher.hashPassword(
           createEstabelecimentoDto.senha,
         );
         dataEstabelecimento.senha = hashedPass;
-
         const coordenadasEntity = this.coordenadasRepository.create({
           latitude,
           longitude,
         });
 
-        const enderecoEntity = this.enderecoRepository.create(endereco);
+        const hashFotoCapa = await this.imageService.upload(
+          fotoCapa,
+          cnpj,
+          'banner',
+        );
+        const hashFotoPerfil = await this.imageService.upload(
+          fotoPerfil,
+          cnpj,
+          'profile',
+        );
 
+        const enderecoEntity = this.enderecoRepository.create(endereco);
         const categoriaEntity = await this.categoriaRepository.findOne({
-          where: { id: estabelecimentoCategoria },
+          where: { id: Number(estabelecimentoCategoria) },
         });
 
         const estabelecimentoEntity = this.estabelecimentoRepository.create({
           ...dataEstabelecimento,
+          fotoCapa: hashFotoCapa,
+          fotoPerfil: hashFotoPerfil,
           estabelecimentoCategoria: categoriaEntity,
           coordenadas: coordenadasEntity,
           endereco: enderecoEntity,
         });
         await transactionalEntityManager.save(estabelecimentoEntity);
-
         return estabelecimentoEntity;
       },
     );
@@ -144,14 +180,40 @@ export class EstabelecimentoService {
       .getOneOrFail();
   }
 
-  async update(id: string, updateEstabelecimentoDto: UpdateEstabelecimentoDto) {
+  async update(
+    id: string,
+    updateEstabelecimentoDto: Partial<UpdateEstabelecimentoDto>,
+  ) {
     const estabelecimentoEntity = await this.findOne(id);
 
     if (!estabelecimentoEntity) {
       throw new Error('Estabelecimento não encontrado.');
     }
 
-    const { endereco, ...dataEstabelecimento } = updateEstabelecimentoDto;
+    const {
+      cnpj,
+      fotoCapa,
+      fotoPerfil,
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+      ...dataEstabelecimento
+    } = updateEstabelecimentoDto;
+    const endereco = {
+      cep,
+      complemento,
+      numero,
+      logradouro,
+      bairro,
+      cidade,
+      estado,
+      pais,
+    };
 
     if (endereco) {
       const { latitude, longitude } =
@@ -165,16 +227,47 @@ export class EstabelecimentoService {
       });
       const enderecoEntity = this.enderecoRepository.create(endereco);
       estabelecimentoEntity.endereco = enderecoEntity;
+      console.log(
+        'EstabelecimentoService : estabelecimentoEntity:',
+        estabelecimentoEntity.endereco,
+      );
       estabelecimentoEntity.coordenadas = coordenadasEntity;
+
       await this.coordenadasRepository.save(coordenadasEntity);
       await this.enderecoRepository.save(enderecoEntity);
     }
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
+
+    console.log(
+      'EstabelecimentoService : estabelecimentoEntity:',
+      estabelecimentoEntity,
+    );
     await this.estabelecimentoRepository.update(
       { id: estabelecimentoEntity.id },
       estabelecimentoEntity,
     );
+
+    try {
+      if (fotoCapa) {
+        const hashFotoCapa = await this.imageService.upload(
+          fotoCapa,
+          cnpj,
+          'banner',
+        );
+        estabelecimentoEntity.fotoCapa = hashFotoCapa;
+      }
+      if (fotoPerfil) {
+        const hashFotoPerfil = await this.imageService.upload(
+          fotoPerfil,
+          cnpj,
+          'profile',
+        );
+        estabelecimentoEntity.fotoPerfil = hashFotoPerfil;
+      }
+    } catch (error) {
+      throw new Error('Não foi possível atualizar as imagens.');
+    }
 
     return estabelecimentoEntity;
   }

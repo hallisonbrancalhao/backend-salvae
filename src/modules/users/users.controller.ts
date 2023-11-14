@@ -70,16 +70,16 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Encontrar usuário por Email' })
+  @ApiOperation({ summary: 'Encontrar usuário por ID' })
   @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
   @ApiResponse({ status: 200, description: 'Usuário encontrado' })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
-  @ApiParam({ name: 'Email', type: 'string', description: 'Email do usuário' })
+  @ApiParam({ name: 'ID', type: 'string', description: 'ID do usuário' })
   @UseGuards(AuthUserGuard)
-  @Get(':email')
-  async findOne(@Param('email') email: string) {
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
     try {
-      return await this.usersService.findOne(email);
+      return await this.usersService.findOne(id);
     } catch (error) {
       throw new HttpException(
         {
@@ -91,21 +91,18 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Alterar usuário por email' })
+  @ApiOperation({ summary: 'Alterar usuário por ID' })
   @ApiHeaders([
     { name: 'Authorization', required: true, description: 'Bearer <token>' },
   ])
   @ApiResponse({ status: 200, description: 'Usuário alterado com sucesso.' })
   @ApiBody({ type: UpdateUserDto })
-  @ApiParam({ name: 'Email', type: 'string', description: 'Email do usuário' })
+  @ApiParam({ name: 'ID', type: 'string', description: 'ID do usuário' })
   @UseGuards(AuthUserGuard)
-  @Patch(':email')
-  async update(
-    @Param('email') email: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
+  @Patch(':id')
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     try {
-      return await this.usersService.update(email, updateUserDto);
+      return await this.usersService.update(id, updateUserDto);
     } catch (error) {
       throw new HttpException(
         {
@@ -117,15 +114,15 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Excluir usuário por Email' })
+  @ApiOperation({ summary: 'Excluir usuário por ID' })
   @ApiHeaders([{ name: 'Authorization', description: 'Bearer token' }])
   @ApiResponse({ status: 200, description: 'Usuário excluído com sucesso.' })
-  @ApiParam({ name: 'email', type: 'string', description: 'Email do usuario ' })
+  @ApiParam({ name: 'ID', type: 'string', description: 'ID do usuario ' })
   @UseGuards(AuthUserGuard)
-  @Delete(':email')
-  async delete(@Param('email') email: string) {
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
     try {
-      return await this.usersService.delete(email);
+      return await this.usersService.delete(id);
     } catch (error) {
       throw new HttpException(
         {
