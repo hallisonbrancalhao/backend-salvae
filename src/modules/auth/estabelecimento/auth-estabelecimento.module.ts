@@ -6,8 +6,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { EstabelecimentoService } from 'src/modules/estabelecimento/estabelecimento.service';
 import { estabelecimentoProviders } from 'src/core/providers/estabelecimento.providers';
-import { GeocodingService } from 'src/utilities';
+import { FtpService, GeocodingService } from 'src/utilities';
 import { PasswordHasherService } from 'src/utilities/password-hasher';
+import { ImagesService } from 'src/modules/images/images.service';
 
 @Module({
   imports: [
@@ -23,6 +24,8 @@ import { PasswordHasherService } from 'src/utilities/password-hasher';
     PasswordHasherService,
     AuthEstabelecimentoService,
     EstabelecimentoService,
+    ImagesService,
+    FtpService,
     ...estabelecimentoProviders,
   ],
 })

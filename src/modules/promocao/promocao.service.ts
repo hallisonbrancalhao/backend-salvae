@@ -39,15 +39,18 @@ export class PromocaoService {
         'promocaoCategoria.categoriaPromocao',
         'promocaoDia.dia',
         'estabelecimento',
-        'estabelecimento.coordenadas',
         'estabelecimento.endereco',
+        'estabelecimento.coordenadas',
+        'estabelecimento.estabelecimentoCategoria',
       ],
     });
 
     return promocoes.map((promocao) => ({
       ...promocao,
+      id: promocao.id,
+      idEstabelecimento: promocao.estabelecimento.id,
       promocaoCategoria: promocao.promocaoCategoria.map(
-        (pc) => pc.categoriaPromocao?.nome ?? 'Não informado',
+        (pc) => pc.categoriaPromocao ?? 'Não informado',
       ),
       promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
       estabelecimento: {
@@ -78,7 +81,7 @@ export class PromocaoService {
       id: promocao.id,
       idEstabelecimento: promocao.estabelecimento.id,
       promocaoCategoria: promocao.promocaoCategoria.map(
-        (pc) => pc.categoriaPromocao,
+        (pc) => pc.categoriaPromocao ?? 'Não informado',
       ),
       promocaoDia: promocao.promocaoDia.map((pd) => pd.dia.dia),
       estabelecimento: {
