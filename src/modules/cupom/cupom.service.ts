@@ -87,7 +87,7 @@ export class CupomService {
     return await this.cupomRepository.find();
   }
 
-  async findByUser(id: string): Promise<Cupom[]> {
+  async findByUser(id: string): Promise<Partial<CupomEncontradoDto>[]> {
     const user = await this.userRepository.findOne({
       where: { id: Number(id) },
     });
@@ -96,9 +96,22 @@ export class CupomService {
       throw new Error('Usuário não encontrado');
     }
 
-    return await this.cupomRepository.find({
+    const cupom = await this.cupomRepository.find({
       where: { user: { id: user.id } },
+      relations: ['promocao', 'user'],
     });
+
+    if (!cupom) {
+      throw new Error('Cupom não encontrado');
+    }
+
+    return cupom.map((cupom) => ({
+      id: cupom.id,
+      idPromocao: cupom.promocao.id,
+      codigo: cupom.codigo,
+      dataValidade: cupom.dataValidade,
+      status: cupom.status,
+    }));
   }
 
   async findByPromocao(id: string): Promise<Cupom[]> {
@@ -127,6 +140,7 @@ export class CupomService {
 
     return {
       id: cupom.id,
+      idPromocao: cupom.promocao.id,
       codigo: cupom.codigo,
       dataValidade: cupom.dataValidade,
       status: cupom.status,
