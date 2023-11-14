@@ -47,7 +47,7 @@ export class UsersService {
     });
   }
 
-  async findOne(email: string) {
+  async findOne(id: string) {
     return await this.userRepository
       .createQueryBuilder('user')
       .select([
@@ -61,19 +61,19 @@ export class UsersService {
         'endereco',
       ])
       .leftJoin('user.endereco', 'endereco')
-      .where('user.email = :email', { email })
+      .where('user.id = :id', { id })
       .getOneOrFail();
   }
 
-  async findUser(email: string) {
+  async findUser(id: string) {
     return await this.userRepository.findOne({
-      where: { email },
+      where: { id: Number(id) },
       relations: ['endereco'],
     });
   }
 
-  async update(email: string, updateUserDto: UpdateUserDto) {
-    const userEntity = await this.findOne(email);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const userEntity = await this.findOne(id);
     const { endereco, ...dataUser } = updateUserDto;
 
     if (endereco) {
@@ -83,14 +83,14 @@ export class UsersService {
     }
 
     Object.assign(userEntity, dataUser);
-    await this.userRepository.update({ email }, userEntity);
+    await this.userRepository.update({ id: Number(id) }, userEntity);
 
     return userEntity;
   }
 
-  async delete(email: string) {
+  async delete(id: string) {
     try {
-      const userEntity = await this.findOne(email);
+      const userEntity = await this.findOne(id);
       await this.userRepository.remove(userEntity);
       return { message: 'Usuário deletado com sucesso' };
     } catch (error) {
