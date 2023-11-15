@@ -227,10 +227,6 @@ export class EstabelecimentoService {
       });
       const enderecoEntity = this.enderecoRepository.create(endereco);
       estabelecimentoEntity.endereco = enderecoEntity;
-      console.log(
-        'EstabelecimentoService : estabelecimentoEntity:',
-        estabelecimentoEntity.endereco,
-      );
       estabelecimentoEntity.coordenadas = coordenadasEntity;
 
       await this.coordenadasRepository.save(coordenadasEntity);
@@ -239,10 +235,6 @@ export class EstabelecimentoService {
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
 
-    console.log(
-      'EstabelecimentoService : estabelecimentoEntity:',
-      estabelecimentoEntity,
-    );
     await this.estabelecimentoRepository.update(
       { id: estabelecimentoEntity.id },
       estabelecimentoEntity,

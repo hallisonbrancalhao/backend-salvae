@@ -17,18 +17,16 @@ export class FtpService {
         password: process.env.FTP_PASS,
         secure: false,
       });
-      console.log('Connected to FTP server');
     } catch (error) {
-      console.error('Error connecting to FTP server:', error);
+      throw new Error("Couldn't connect to FTP server: " + error);
     }
   }
 
   async disconnect() {
     try {
       await this.client.close();
-      console.log('Disconnected from FTP server');
     } catch (error) {
-      console.error('Error disconnecting from FTP server:', error);
+      throw new Error('Error disconnecting from FTP server:' + error);
     }
   }
 
