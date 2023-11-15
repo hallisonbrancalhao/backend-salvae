@@ -42,7 +42,8 @@ export class CupomController {
   @Post()
   async create(@Body() createCupomDto: CreateCupomDto) {
     try {
-      return await this.cupomService.create(createCupomDto);
+      const cupom = await this.cupomService.create(createCupomDto);
+      return { cupom };
     } catch (error) {
       throw new HttpException(
         {
