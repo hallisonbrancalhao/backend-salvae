@@ -60,7 +60,6 @@ export class CupomService {
       cupom.user = user;
 
       const createdCupom = await manager.save(cupom);
-      console.log('CupomService : createdCupom : createdCupom:', createdCupom);
       return createdCupom.codigo;
     });
 
