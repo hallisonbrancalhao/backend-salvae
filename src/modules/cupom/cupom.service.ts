@@ -28,7 +28,7 @@ export class CupomService {
   ) {}
 
   async create(createCupomDto: CreateCupomDto) {
-    await this.connection.transaction(async (manager) => {
+    const createdCupom = await this.connection.transaction(async (manager) => {
       const cupom = new Cupom();
       cupom.codigo = generateToken();
       cupom.dataValidade = cupomExpiresDate();
@@ -55,11 +55,16 @@ export class CupomService {
         relations: ['user'],
       });
 
+      if (alreadyCreated) return alreadyCreated.codigo;
+
       cupom.user = user;
 
-      if (alreadyCreated) throw new Error('Cupom já cadastrado');
-      return await manager.save(cupom);
+      const createdCupom = await manager.save(cupom);
+      console.log('CupomService : createdCupom : createdCupom:', createdCupom);
+      return createdCupom.codigo;
     });
+
+    return createdCupom.valueOf();
   }
 
   async validate(idPromocao: string, body: CupomValidateDto) {
