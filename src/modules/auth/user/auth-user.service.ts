@@ -38,6 +38,7 @@ export class AuthUserService {
       if (!validPassword) throw new UnauthorizedException();
 
       const payload = {
+        id: user.id,
         cpf: user.CPF,
         nome: user.nome,
         sobrenome: user.sobrenome,
