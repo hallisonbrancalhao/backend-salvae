@@ -24,14 +24,14 @@ export class FtpService {
 
   async disconnect() {
     try {
-      await this.client.close();
+      this.client.close();
     } catch (error) {
       throw new Error('Error disconnecting from FTP server:' + error);
     }
   }
 
   async saveImage(file: UploadImageDto, folder: string, name: string) {
-    const path = `/api/images/${folder.replace(/\D/g, '').toLowerCase()}`;
+    const path = `/api/images/${folder.replace(/[^0-9]/g, '')}`;
     try {
       await this.connect();
 
@@ -46,9 +46,10 @@ export class FtpService {
       await this.client.uploadFrom(stream, fullName);
       await this.disconnect();
 
-      return `https://api.salvae.com.br/images/${folder}/${name}.${
-        file.originalname.split('.')[1]
-      }`;
+      return `https://api.salvae.com.br/images/${folder.replace(
+        /[^0-9]/g,
+        '',
+      )}/${name}.${file.originalname.split('.')[1]}`;
     } catch (error) {
       throw new Error(error);
     } finally {
