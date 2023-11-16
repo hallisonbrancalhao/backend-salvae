@@ -164,14 +164,14 @@ export class EstabelecimentoService {
         'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
-        'estabelecimento.estabelecimentoCategoria',
         'estabelecimento.instagram',
-        'estabelecimento.whatsapp',
-        'estabelecimento.fotoCapa',
-        'estabelecimento.fotoPerfil',
-        'estabelecimento.senha',
+        'categoria',
         'endereco',
         'coordenadas',
+        'estabelecimento.whatsapp',
+        'estabelecimento.estabelecimentoCategoria',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
@@ -235,11 +235,6 @@ export class EstabelecimentoService {
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
 
-    await this.estabelecimentoRepository.update(
-      { id: estabelecimentoEntity.id },
-      estabelecimentoEntity,
-    );
-
     try {
       if (fotoCapa) {
         const hashFotoCapa = await this.imageService.upload(
@@ -258,8 +253,13 @@ export class EstabelecimentoService {
         estabelecimentoEntity.fotoPerfil = hashFotoPerfil;
       }
     } catch (error) {
-      throw new Error('Não foi possível atualizar as imagens.');
+      throw new Error('Não foi possível atualizar as imagens.' + error.message);
     }
+
+    await this.estabelecimentoRepository.update(
+      { id: estabelecimentoEntity.id },
+      estabelecimentoEntity,
+    );
 
     return estabelecimentoEntity;
   }
