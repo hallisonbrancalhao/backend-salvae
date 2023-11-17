@@ -60,6 +60,26 @@ export class PromocaoService {
     }));
   }
 
+  async findByEstabelecimento(idEstabelecimento: string) {
+    const estabelecimento = await this.estabelecimentoRepository.findOne({
+      where: { id: Number(idEstabelecimento) },
+    });
+
+    if (!estabelecimento) {
+      throw new NotFoundException(
+        `Estabelecimento não encontrado com o id: ${idEstabelecimento}`,
+      );
+    }
+
+    return await this.promocaoRepository
+      .createQueryBuilder('promocao')
+      .select('promocao')
+      .addSelect('promocao.estabelecimento', 'estabelecimento')
+      .innerJoin('promocao.estabelecimento', 'estabelecimento')
+      .where('estabelecimento.id = :id', { id: estabelecimento.id })
+      .getMany();
+  }
+
   async findOne(id: string) {
     const idNumber = Number(id);
 
