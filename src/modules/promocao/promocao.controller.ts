@@ -93,8 +93,8 @@ export class PromocaoController {
   }
 
   @ApiOperation({ summary: 'Encontrar promoção por Id' })
-  @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })
-  @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
+  @ApiResponse({ status: 302, description: 'Promocao encontrado' })
+  @ApiResponse({ status: 404, description: 'Promocao não encontrado' })
   @ApiParam({
     name: 'id',
     type: 'string',
@@ -104,6 +104,30 @@ export class PromocaoController {
   async findOne(@Param('id') id: string) {
     try {
       return await this.promocao.findOne(id);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @ApiOperation({ summary: 'Encontrar promoção por Id Estabelecimento' })
+  @ApiResponse({ status: 302, description: 'Estabelecimento encontrado' })
+  @ApiResponse({ status: 404, description: 'Estabelecimento não encontrado' })
+  @ApiParam({
+    name: 'id',
+    type: 'string',
+    description: 'Id da promocao',
+  })
+  @UseGuards(AuthEstabelecimentoGuard)
+  @Get('estabelecimento/:id')
+  async findByEstabelecimento(@Param('id') id: string) {
+    try {
+      return await this.promocao.findByEstabelecimento(id);
     } catch (error) {
       throw new HttpException(
         {
