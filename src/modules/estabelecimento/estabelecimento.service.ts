@@ -124,6 +124,7 @@ export class EstabelecimentoService {
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
       .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .orderBy('estabelecimento.nome')
+      .where('estabelecimento.role = :role', { role: 2 })
       .getMany();
   }
 
@@ -139,6 +140,7 @@ export class EstabelecimentoService {
       .createQueryBuilder('estabelecimento')
       .select([
         'estabelecimento.id',
+        'estabelecimento.role',
         'estabelecimento.nome',
         'estabelecimento.senha',
         'estabelecimento.cnpj',
@@ -177,6 +179,7 @@ export class EstabelecimentoService {
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
       .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .where('estabelecimento.id = :id', { id })
+      .andWhere('estabelecimento.role = :role', { role: 2 })
       .getOneOrFail();
   }
 
@@ -254,6 +257,13 @@ export class EstabelecimentoService {
       }
     } catch (error) {
       throw new Error('Não foi possível atualizar as imagens.' + error.message);
+    }
+
+    if (updateEstabelecimentoDto.senha) {
+      const hashedPass = await this.hasher.hashPassword(
+        updateEstabelecimentoDto.senha,
+      );
+      estabelecimentoEntity.senha = hashedPass;
     }
 
     await this.estabelecimentoRepository.update(
