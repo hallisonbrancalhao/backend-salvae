@@ -30,10 +30,6 @@ export class CreateEstabelecimentoDto {
   @IsNotEmpty()
   estabelecimentoCategoria: string;
 
-  // @ApiProperty({ type: CreateEnderecoEstabelecimentoDto, required: false })
-  // @IsOptional()
-  // endereco: CreateEnderecoEstabelecimentoDto;
-
   @ApiProperty()
   @IsString({ message: 'O whatsapp deve ser válido' })
   @IsNotEmpty()
@@ -91,4 +87,8 @@ export class CreateEstabelecimentoDto {
   @IsString({ message: 'O país deve ser uma string' })
   @IsNotEmpty({ message: 'O país deve ser preenchido' })
   pais: string;
+
+  @ApiProperty({ example: 1 })
+  @IsOptional()
+  role: number | null;
 }

@@ -91,6 +91,13 @@ export class Estabelecimento {
   @Column({ type: 'boolean', default: true })
   status: boolean;
 
+  /*
+   * 1 - Admin
+   * 2 - Estabelecimento
+   */
+  @Column({ type: 'integer', default: 2 })
+  role: number;
+
   @CreateDateColumn({
     type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP(6)',

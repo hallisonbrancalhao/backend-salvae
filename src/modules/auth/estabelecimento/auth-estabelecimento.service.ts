@@ -42,6 +42,7 @@ export class AuthEstabelecimentoService {
       const payload = {
         cnpj: estabelecimento.cnpj,
         nome: estabelecimento.nome,
+        role: estabelecimento.role,
         endereco: estabelecimento?.endereco,
       };
 
