@@ -40,6 +40,7 @@ export class AuthEstabelecimentoService {
       if (!validPassword) throw new UnauthorizedException();
 
       const payload = {
+        id: estabelecimento.id,
         cnpj: estabelecimento.cnpj,
         nome: estabelecimento.nome,
         role: estabelecimento.role,
