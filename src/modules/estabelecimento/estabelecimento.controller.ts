@@ -26,6 +26,7 @@ import {
 } from '@nestjs/swagger';
 import { EstabelecimentoService } from './estabelecimento.service';
 import {
+  AuthAdminGuard,
   AuthEstabelecimentoGuard,
   CreateEstabelecimentoDto,
   UpdateEstabelecimentoDto,
@@ -154,6 +155,7 @@ export class EstabelecimentoController {
     description: 'id do estabelecimento',
   })
   @UseGuards(AuthEstabelecimentoGuard)
+  @UseGuards(AuthAdminGuard)
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'fotoCapa', maxCount: 1 },
@@ -201,6 +203,7 @@ export class EstabelecimentoController {
     description: 'id do estabelecimento ',
   })
   @UseGuards(AuthEstabelecimentoGuard)
+  @UseGuards(AuthAdminGuard)
   @Delete(':id')
   async delete(@Param('id') id: string) {
     try {

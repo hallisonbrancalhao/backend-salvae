@@ -124,6 +124,7 @@ export class EstabelecimentoService {
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
       .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .orderBy('estabelecimento.nome')
+      .where('estabelecimento.role = :role', { role: 2 })
       .getMany();
   }
 
@@ -139,6 +140,7 @@ export class EstabelecimentoService {
       .createQueryBuilder('estabelecimento')
       .select([
         'estabelecimento.id',
+        'estabelecimento.role',
         'estabelecimento.nome',
         'estabelecimento.senha',
         'estabelecimento.cnpj',
@@ -164,19 +166,20 @@ export class EstabelecimentoService {
         'estabelecimento.id',
         'estabelecimento.nome',
         'estabelecimento.cnpj',
-        'estabelecimento.estabelecimentoCategoria',
         'estabelecimento.instagram',
-        'estabelecimento.whatsapp',
-        'estabelecimento.fotoCapa',
-        'estabelecimento.fotoPerfil',
-        'estabelecimento.senha',
+        'categoria',
         'endereco',
         'coordenadas',
+        'estabelecimento.whatsapp',
+        'estabelecimento.estabelecimentoCategoria',
+        'estabelecimento.fotoCapa',
+        'estabelecimento.fotoPerfil',
       ])
       .leftJoin('estabelecimento.endereco', 'endereco')
       .leftJoin('estabelecimento.coordenadas', 'coordenadas')
       .leftJoin('estabelecimento.estabelecimentoCategoria', 'categoria')
       .where('estabelecimento.id = :id', { id })
+      .andWhere('estabelecimento.role = :role', { role: 2 })
       .getOneOrFail();
   }
 
@@ -235,11 +238,6 @@ export class EstabelecimentoService {
 
     Object.assign(estabelecimentoEntity, dataEstabelecimento);
 
-    await this.estabelecimentoRepository.update(
-      { id: estabelecimentoEntity.id },
-      estabelecimentoEntity,
-    );
-
     try {
       if (fotoCapa) {
         const hashFotoCapa = await this.imageService.upload(
@@ -258,8 +256,20 @@ export class EstabelecimentoService {
         estabelecimentoEntity.fotoPerfil = hashFotoPerfil;
       }
     } catch (error) {
-      throw new Error('Não foi possível atualizar as imagens.');
+      throw new Error('Não foi possível atualizar as imagens.' + error.message);
     }
+
+    if (updateEstabelecimentoDto.senha) {
+      const hashedPass = await this.hasher.hashPassword(
+        updateEstabelecimentoDto.senha,
+      );
+      estabelecimentoEntity.senha = hashedPass;
+    }
+
+    await this.estabelecimentoRepository.update(
+      { id: estabelecimentoEntity.id },
+      estabelecimentoEntity,
+    );
 
     return estabelecimentoEntity;
   }
